@@ -1,15 +1,21 @@
-
 import { useState } from "react";
 import { Tutorial } from "@/components/Tutorial";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Calendar, Clock, MapPin, Star, MessageCircle } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, MapPin, Star, MessageCircle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 const Index = () => {
   const { toast } = useToast();
   const [showTutorial, setShowTutorial] = useState(true);
+  const [date, setDate] = useState<Date>();
+  const [time, setTime] = useState<string>();
 
   const featuredDestinations = [
     {
@@ -83,6 +89,11 @@ const Index = () => {
       duration: 2000,
     });
   };
+
+  const times = Array.from({ length: 24 }, (_, i) => {
+    const hour = i.toString().padStart(2, '0');
+    return [`${hour}:00`, `${hour}:30`];
+  }).flat();
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -164,22 +175,44 @@ const Index = () => {
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                <Calendar className="text-primary" />
-                <input
-                  type="text"
-                  placeholder="Date"
-                  className="flex-1 bg-transparent outline-none"
-                />
-              </div>
-              <div className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                <Clock className="text-primary" />
-                <input
-                  type="text"
-                  placeholder="Time"
-                  className="flex-1 bg-transparent outline-none"
-                />
-              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+
+              <Select onValueChange={setTime} value={time}>
+                <SelectTrigger className="w-full">
+                  <div className="flex items-center">
+                    <Clock className="mr-2 h-4 w-4 text-primary" />
+                    {time ? time : "Select time"}
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  {times.map((timeOption) => (
+                    <SelectItem key={timeOption} value={timeOption}>
+                      {timeOption}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <Button 
               className="w-full bg-secondary hover:bg-secondary/90 text-white"
