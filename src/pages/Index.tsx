@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Tutorial } from "@/components/Tutorial";
 import { BottomNav } from "@/components/BottomNav";
@@ -162,63 +163,7 @@ const Index = () => {
           <p className="text-gray-600">Where would you like to go today?</p>
         </header>
 
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Featured Destinations</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {featuredDestinations.map((destination) => (
-              <Card 
-                key={destination.title} 
-                className="overflow-hidden group hover:shadow-lg transition-all duration-300"
-              >
-                <div className="relative h-48">
-                  <img
-                    src={destination.image}
-                    alt={destination.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-4 left-4 text-white">
-                    <h3 className="text-lg font-semibold">{destination.title}</h3>
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="w-4 h-4" />
-                      <span>{destination.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="flex items-center">
-                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                        <span className="ml-1">{destination.rating}</span>
-                      </div>
-                      <span className="font-semibold">From {destination.price}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <MessageCircle className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-medium">Latest Reviews</span>
-                  </div>
-                  <div className="space-y-3">
-                    {destination.reviews.map((review, index) => (
-                      <div key={index} className="border-b last:border-b-0 pb-3 last:pb-0">
-                        <div className="flex justify-between items-start mb-1">
-                          <span className="font-medium text-sm">{review.author}</span>
-                          <div className="flex items-center">
-                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                            <span className="text-xs ml-1">{review.rating}</span>
-                          </div>
-                        </div>
-                        <p className="text-sm text-gray-600">{review.comment}</p>
-                        <span className="text-xs text-gray-400">{review.date}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        <section className="bg-white rounded-xl p-6 shadow-lg">
+        <section className="bg-white rounded-xl p-6 shadow-lg mb-8">
           <h2 className="text-xl font-semibold mb-4">Book Your Trip</h2>
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -305,6 +250,62 @@ const Index = () => {
             >
               Search Tickets
             </Button>
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Popular Destinations</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {featuredDestinations.map((destination) => (
+              <Card 
+                key={destination.title} 
+                className="overflow-hidden group hover:shadow-lg transition-all duration-300"
+              >
+                <div className="relative h-48">
+                  <img
+                    src={destination.image}
+                    alt={destination.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-4 left-4 text-white">
+                    <h3 className="text-lg font-semibold">{destination.title}</h3>
+                    <div className="flex items-center gap-2 text-sm">
+                      <MapPin className="w-4 h-4" />
+                      <span>{destination.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center">
+                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                        <span className="ml-1">{destination.rating}</span>
+                      </div>
+                      <span className="font-semibold">From {destination.price}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <MessageCircle className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium">Latest Reviews</span>
+                  </div>
+                  <div className="space-y-3">
+                    {destination.reviews.map((review, index) => (
+                      <div key={index} className="border-b last:border-b-0 pb-3 last:pb-0">
+                        <div className="flex justify-between items-start mb-1">
+                          <span className="font-medium text-sm">{review.author}</span>
+                          <div className="flex items-center">
+                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                            <span className="text-xs ml-1">{review.rating}</span>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600">{review.comment}</p>
+                        <span className="text-xs text-gray-400">{review.date}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            ))}
           </div>
         </section>
       </main>
