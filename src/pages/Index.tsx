@@ -4,7 +4,7 @@ import { Tutorial } from "@/components/Tutorial";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Calendar, Clock, MapPin, Star } from "lucide-react";
+import { Calendar, Clock, MapPin, Star, MessageCircle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 const Index = () => {
@@ -18,6 +18,20 @@ const Index = () => {
       price: "$45",
       rating: 4.8,
       location: "Colorado Springs",
+      reviews: [
+        {
+          author: "Sarah M.",
+          comment: "Beautiful views and perfect weather!",
+          rating: 5,
+          date: "2 days ago"
+        },
+        {
+          author: "Mike R.",
+          comment: "Great hiking trails nearby",
+          rating: 4.5,
+          date: "1 week ago"
+        }
+      ]
     },
     {
       title: "City Explorer",
@@ -25,6 +39,20 @@ const Index = () => {
       price: "$35",
       rating: 4.6,
       location: "New York City",
+      reviews: [
+        {
+          author: "John D.",
+          comment: "Amazing city experience",
+          rating: 4.5,
+          date: "3 days ago"
+        },
+        {
+          author: "Lisa K.",
+          comment: "Perfect location for sightseeing",
+          rating: 5,
+          date: "5 days ago"
+        }
+      ]
     },
     {
       title: "Beach Paradise",
@@ -32,6 +60,20 @@ const Index = () => {
       price: "$55",
       rating: 4.9,
       location: "Miami Beach",
+      reviews: [
+        {
+          author: "Alex W.",
+          comment: "Crystal clear waters and perfect sand",
+          rating: 5,
+          date: "1 day ago"
+        },
+        {
+          author: "Emma S.",
+          comment: "Best beach vacation ever!",
+          rating: 4.8,
+          date: "4 days ago"
+        }
+      ]
     },
   ];
 
@@ -82,6 +124,27 @@ const Index = () => {
                       </div>
                       <span className="font-semibold">From {destination.price}</span>
                     </div>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <MessageCircle className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium">Latest Reviews</span>
+                  </div>
+                  <div className="space-y-3">
+                    {destination.reviews.map((review, index) => (
+                      <div key={index} className="border-b last:border-b-0 pb-3 last:pb-0">
+                        <div className="flex justify-between items-start mb-1">
+                          <span className="font-medium text-sm">{review.author}</span>
+                          <div className="flex items-center">
+                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                            <span className="text-xs ml-1">{review.rating}</span>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600">{review.comment}</p>
+                        <span className="text-xs text-gray-400">{review.date}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </Card>
