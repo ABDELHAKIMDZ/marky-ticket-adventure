@@ -15,7 +15,10 @@ const Index = () => {
   const { toast } = useToast();
   const [showTutorial, setShowTutorial] = useState(true);
   const [date, setDate] = useState<Date>();
-  const [time, setTime] = useState<string>();
+  const [from, setFrom] = useState<string>();
+  const [to, setTo] = useState<string>();
+  const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+  const [selectedTime, setSelectedTime] = useState<string>();
 
   const featuredDestinations = [
     {
@@ -83,17 +86,69 @@ const Index = () => {
     },
   ];
 
-  const handleSearch = () => {
-    toast({
-      description: "Searching for available tickets...",
-      duration: 2000,
-    });
+  const locations = [
+    "New York City",
+    "Boston",
+    "Washington DC",
+    "Miami Beach",
+    "Colorado Springs",
+    "Los Angeles"
+  ];
+
+  const fetchAvailableTimes = (from: string, to: string, date: Date) => {
+    const times: string[] = [];
+    const startHour = 6;
+    const endHour = 22;
+    
+    for (let hour = startHour; hour <= endHour; hour++) {
+      if (Math.random() > 0.5) {
+        times.push(`${hour.toString().padStart(2, '0')}:00`);
+      }
+      if (Math.random() > 0.5) {
+        times.push(`${hour.toString().padStart(2, '0')}:30`);
+      }
+    }
+    
+    return times.sort();
   };
 
-  const times = Array.from({ length: 24 }, (_, i) => {
-    const hour = i.toString().padStart(2, '0');
-    return [`${hour}:00`, `${hour}:30`];
-  }).flat();
+  const handleDateSelect = (newDate: Date | undefined) => {
+    setDate(newDate);
+    if (newDate && from && to) {
+      const times = fetchAvailableTimes(from, to, newDate);
+      setAvailableTimes(times);
+      setSelectedTime(undefined);
+    }
+  };
+
+  const handleRouteSelect = (value: string, type: 'from' | 'to') => {
+    if (type === 'from') {
+      setFrom(value);
+    } else {
+      setTo(value);
+    }
+    
+    if (date && ((type === 'from' && to) || (type === 'to' && from))) {
+      const times = fetchAvailableTimes(type === 'from' ? value : from!, type === 'to' ? value : to!, date);
+      setAvailableTimes(times);
+      setSelectedTime(undefined);
+    }
+  };
+
+  const handleSearch = () => {
+    if (!from || !to || !date || !selectedTime) {
+      toast({
+        description: "Please select all trip details",
+        duration: 2000,
+      });
+      return;
+    }
+    
+    toast({
+      description: `Searching for tickets from ${from} to ${to} on ${format(date, "PPP")} at ${selectedTime}`,
+      duration: 3000,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -166,15 +221,41 @@ const Index = () => {
         <section className="bg-white rounded-xl p-6 shadow-lg">
           <h2 className="text-xl font-semibold mb-4">Book Your Trip</h2>
           <div className="space-y-4">
-            <div className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <MapPin className="text-primary" />
-              <input
-                type="text"
-                placeholder="Where to?"
-                className="flex-1 bg-transparent outline-none"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Select onValueChange={(value) => handleRouteSelect(value, 'from')} value={from}>
+                <SelectTrigger>
+                  <div className="flex items-center">
+                    <MapPin className="mr-2 h-4 w-4 text-primary" />
+                    {from ? from : "From"}
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  {locations.map((location) => (
+                    <SelectItem key={location} value={location}>
+                      {location}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select onValueChange={(value) => handleRouteSelect(value, 'to')} value={to}>
+                <SelectTrigger>
+                  <div className="flex items-center">
+                    <MapPin className="mr-2 h-4 w-4 text-primary" />
+                    {to ? to : "To"}
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  {locations.filter(loc => loc !== from).map((location) => (
+                    <SelectItem key={location} value={location}>
+                      {location}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -192,31 +273,35 @@ const Index = () => {
                   <Calendar
                     mode="single"
                     selected={date}
-                    onSelect={setDate}
+                    onSelect={handleDateSelect}
                     initialFocus
                   />
                 </PopoverContent>
               </Popover>
 
-              <Select onValueChange={setTime} value={time}>
-                <SelectTrigger className="w-full">
-                  <div className="flex items-center">
-                    <Clock className="mr-2 h-4 w-4 text-primary" />
-                    {time ? time : "Select time"}
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  {times.map((timeOption) => (
-                    <SelectItem key={timeOption} value={timeOption}>
-                      {timeOption}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {availableTimes.length > 0 && (
+                <Select onValueChange={setSelectedTime} value={selectedTime}>
+                  <SelectTrigger className="w-full">
+                    <div className="flex items-center">
+                      <Clock className="mr-2 h-4 w-4 text-primary" />
+                      {selectedTime ? selectedTime : "Select time"}
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableTimes.map((timeOption) => (
+                      <SelectItem key={timeOption} value={timeOption}>
+                        {timeOption}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
+
             <Button 
               className="w-full bg-secondary hover:bg-secondary/90 text-white"
               onClick={handleSearch}
+              disabled={!from || !to || !date || !selectedTime}
             >
               Search Tickets
             </Button>
