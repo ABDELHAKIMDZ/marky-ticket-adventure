@@ -30,7 +30,6 @@ const Index = () => {
   };
 
   const handleSignIn = () => {
-    // To be implemented with authentication
     setShowAuth(false);
     toast({
       description: "Sign in functionality will be implemented soon",
@@ -39,7 +38,6 @@ const Index = () => {
   };
 
   const handleSignUp = () => {
-    // To be implemented with authentication
     setShowAuth(false);
     toast({
       description: "Sign up functionality will be implemented soon",
@@ -49,77 +47,77 @@ const Index = () => {
 
   const featuredDestinations = [
     {
-      title: "Mountain Retreat",
-      image: "https://images.unsplash.com/photo-1472396961693-142e6e269027",
-      price: "$45",
+      title: "Béjaïa Center",
+      image: "https://images.unsplash.com/photo-1590167920596-706a39e48bc5",
+      price: "200 DA",
       rating: 4.8,
-      location: "Colorado Springs",
+      location: "Downtown Béjaïa",
       reviews: [
         {
-          author: "Sarah M.",
-          comment: "Beautiful views and perfect weather!",
+          author: "Karim M.",
+          comment: "Beautiful historic city center!",
           rating: 5,
           date: "2 days ago"
         },
         {
-          author: "Mike R.",
-          comment: "Great hiking trails nearby",
+          author: "Sarah B.",
+          comment: "Great shopping areas",
           rating: 4.5,
           date: "1 week ago"
         }
       ]
     },
     {
-      title: "City Explorer",
-      image: "https://images.unsplash.com/photo-1460574283810-2aab119d8511",
-      price: "$35",
-      rating: 4.6,
-      location: "New York City",
+      title: "Tichy Beach",
+      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+      price: "150 DA",
+      rating: 4.9,
+      location: "Tichy, Béjaïa",
       reviews: [
         {
-          author: "John D.",
-          comment: "Amazing city experience",
-          rating: 4.5,
+          author: "Ahmed L.",
+          comment: "Beautiful Mediterranean beach",
+          rating: 5,
           date: "3 days ago"
         },
         {
-          author: "Lisa K.",
-          comment: "Perfect location for sightseeing",
+          author: "Lina K.",
+          comment: "Perfect for summer vacation",
           rating: 5,
           date: "5 days ago"
         }
       ]
     },
     {
-      title: "Beach Paradise",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-      price: "$55",
-      rating: 4.9,
-      location: "Miami Beach",
+      title: "Gouraya National Park",
+      image: "https://images.unsplash.com/photo-1565019011521-b0456c7a1405",
+      price: "300 DA",
+      rating: 4.7,
+      location: "Gouraya, Béjaïa",
       reviews: [
         {
-          author: "Alex W.",
-          comment: "Crystal clear waters and perfect sand",
-          rating: 5,
+          author: "Yacine R.",
+          comment: "Amazing hiking trails and views",
+          rating: 4.8,
           date: "1 day ago"
         },
         {
-          author: "Emma S.",
-          comment: "Best beach vacation ever!",
-          rating: 4.8,
+          author: "Amira H.",
+          comment: "Must-visit natural attraction",
+          rating: 4.6,
           date: "4 days ago"
         }
       ]
-    },
+    }
   ];
 
   const locations = [
-    "New York City",
-    "Boston",
-    "Washington DC",
-    "Miami Beach",
-    "Colorado Springs",
-    "Los Angeles"
+    "Béjaïa Center",
+    "Tichy",
+    "Aokas",
+    "Gouraya",
+    "Souk El Tennine",
+    "Akbou"
   ];
 
   const fetchAvailableTimes = (from: string, to: string, date: Date) => {
@@ -183,7 +181,7 @@ const Index = () => {
         <Card className="w-full max-w-md p-6 space-y-6">
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold text-secondary">Welcome to Marky Ticket</h1>
-            <p className="text-gray-600">Your smart travel companion</p>
+            <p className="text-gray-600">Your Béjaïa travel companion</p>
           </div>
           
           <div className="space-y-4">
@@ -229,9 +227,9 @@ const Index = () => {
       <main className="container mx-auto px-4 py-6 animate-fade-in">
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-secondary mb-2">
-            Popular Destinations
+            Explore Béjaïa
           </h1>
-          <p className="text-gray-600">Choose your next adventure</p>
+          <p className="text-gray-600">Discover the beauty of Béjaïa</p>
         </header>
 
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
@@ -240,7 +238,7 @@ const Index = () => {
               key={destination.title} 
               className="overflow-hidden group hover:shadow-lg transition-all duration-300 cursor-pointer"
               onClick={() => {
-                setFrom("New York City"); // Default starting point for demo
+                setFrom("Béjaïa Center"); // Default starting point
                 setTo(destination.location);
                 toast({
                   description: `Selected destination: ${destination.location}`,
