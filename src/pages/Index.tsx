@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { Tutorial } from "@/components/Tutorial";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Clock, MapPin, Star, MessageCircle } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, MapPin, Star, MessageCircle, LogIn, UserPlus, ArrowRight } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -15,11 +14,38 @@ import { cn } from "@/lib/utils";
 const Index = () => {
   const { toast } = useToast();
   const [showTutorial, setShowTutorial] = useState(true);
+  const [showAuth, setShowAuth] = useState(true);
   const [date, setDate] = useState<Date>();
   const [from, setFrom] = useState<string>();
   const [to, setTo] = useState<string>();
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [selectedTime, setSelectedTime] = useState<string>();
+
+  const handleSkip = () => {
+    setShowAuth(false);
+    toast({
+      description: "You can sign up later from the settings menu",
+      duration: 3000,
+    });
+  };
+
+  const handleSignIn = () => {
+    // To be implemented with authentication
+    setShowAuth(false);
+    toast({
+      description: "Sign in functionality will be implemented soon",
+      duration: 2000,
+    });
+  };
+
+  const handleSignUp = () => {
+    // To be implemented with authentication
+    setShowAuth(false);
+    toast({
+      description: "Sign up functionality will be implemented soon",
+      duration: 2000,
+    });
+  };
 
   const featuredDestinations = [
     {
@@ -151,6 +177,51 @@ const Index = () => {
     });
   };
 
+  if (showAuth) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md p-6 space-y-6">
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-bold text-secondary">Welcome to Marky Ticket</h1>
+            <p className="text-gray-600">Your smart travel companion</p>
+          </div>
+          
+          <div className="space-y-4">
+            <Button 
+              className="w-full" 
+              onClick={handleSignIn}
+              variant="outline"
+            >
+              <LogIn className="mr-2 h-4 w-4" />
+              Sign In
+            </Button>
+            
+            <Button 
+              className="w-full"
+              onClick={handleSignUp}
+            >
+              <UserPlus className="mr-2 h-4 w-4" />
+              Sign Up
+            </Button>
+            
+            <Button 
+              className="w-full"
+              variant="ghost"
+              onClick={handleSkip}
+            >
+              <ArrowRight className="mr-2 h-4 w-4" />
+              Continue as Guest
+            </Button>
+          </div>
+          
+          <p className="text-xs text-center text-gray-500">
+            By continuing, you agree to our Terms of Service and Privacy Policy
+          </p>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {showTutorial && <Tutorial onComplete={() => setShowTutorial(false)} />}
@@ -158,156 +229,163 @@ const Index = () => {
       <main className="container mx-auto px-4 py-6 animate-fade-in">
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-secondary mb-2">
-            Welcome to Marky Ticket
+            Popular Destinations
           </h1>
-          <p className="text-gray-600">Where would you like to go today?</p>
+          <p className="text-gray-600">Choose your next adventure</p>
         </header>
 
-        <section className="bg-white rounded-xl p-6 shadow-lg mb-8">
-          <h2 className="text-xl font-semibold mb-4">Book Your Trip</h2>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Select onValueChange={(value) => handleRouteSelect(value, 'from')} value={from}>
-                <SelectTrigger>
-                  <div className="flex items-center">
-                    <MapPin className="mr-2 h-4 w-4 text-primary" />
-                    {from ? from : "From"}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          {featuredDestinations.map((destination) => (
+            <Card 
+              key={destination.title} 
+              className="overflow-hidden group hover:shadow-lg transition-all duration-300 cursor-pointer"
+              onClick={() => {
+                setFrom("New York City"); // Default starting point for demo
+                setTo(destination.location);
+                toast({
+                  description: `Selected destination: ${destination.location}`,
+                  duration: 2000,
+                });
+              }}
+            >
+              <div className="relative h-48">
+                <img
+                  src={destination.image}
+                  alt={destination.title}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-4 left-4 text-white">
+                  <h3 className="text-lg font-semibold">{destination.title}</h3>
+                  <div className="flex items-center gap-2 text-sm">
+                    <MapPin className="w-4 h-4" />
+                    <span>{destination.location}</span>
                   </div>
-                </SelectTrigger>
-                <SelectContent>
-                  {locations.map((location) => (
-                    <SelectItem key={location} value={location}>
-                      {location}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select onValueChange={(value) => handleRouteSelect(value, 'to')} value={to}>
-                <SelectTrigger>
-                  <div className="flex items-center">
-                    <MapPin className="mr-2 h-4 w-4 text-primary" />
-                    {to ? to : "To"}
-                  </div>
-                </SelectTrigger>
-                <SelectContent>
-                  {locations.filter(loc => loc !== from).map((location) => (
-                    <SelectItem key={location} value={location}>
-                      {location}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={handleDateSelect}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-
-              {availableTimes.length > 0 && (
-                <Select onValueChange={setSelectedTime} value={selectedTime}>
-                  <SelectTrigger className="w-full">
+                  <div className="flex items-center gap-2 mt-1">
                     <div className="flex items-center">
-                      <Clock className="mr-2 h-4 w-4 text-primary" />
-                      {selectedTime ? selectedTime : "Select time"}
+                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                      <span className="ml-1">{destination.rating}</span>
+                    </div>
+                    <span className="font-semibold">From {destination.price}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <MessageCircle className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium">Latest Reviews</span>
+                </div>
+                <div className="space-y-3">
+                  {destination.reviews.map((review, index) => (
+                    <div key={index} className="border-b last:border-b-0 pb-3 last:pb-0">
+                      <div className="flex justify-between items-start mb-1">
+                        <span className="font-medium text-sm">{review.author}</span>
+                        <div className="flex items-center">
+                          <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                          <span className="text-xs ml-1">{review.rating}</span>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-600">{review.comment}</p>
+                      <span className="text-xs text-gray-400">{review.date}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          ))}
+        </section>
+
+        {(from || to) && (
+          <section className="bg-white rounded-xl p-6 shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">Book Your Trip</h2>
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Select onValueChange={(value) => handleRouteSelect(value, 'from')} value={from}>
+                  <SelectTrigger>
+                    <div className="flex items-center">
+                      <MapPin className="mr-2 h-4 w-4 text-primary" />
+                      {from ? from : "From"}
                     </div>
                   </SelectTrigger>
                   <SelectContent>
-                    {availableTimes.map((timeOption) => (
-                      <SelectItem key={timeOption} value={timeOption}>
-                        {timeOption}
+                    {locations.map((location) => (
+                      <SelectItem key={location} value={location}>
+                        {location}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-              )}
-            </div>
 
-            <Button 
-              className="w-full bg-secondary hover:bg-secondary/90 text-white"
-              onClick={handleSearch}
-              disabled={!from || !to || !date || !selectedTime}
-            >
-              Search Tickets
-            </Button>
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Popular Destinations</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {featuredDestinations.map((destination) => (
-              <Card 
-                key={destination.title} 
-                className="overflow-hidden group hover:shadow-lg transition-all duration-300"
-              >
-                <div className="relative h-48">
-                  <img
-                    src={destination.image}
-                    alt={destination.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-4 left-4 text-white">
-                    <h3 className="text-lg font-semibold">{destination.title}</h3>
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="w-4 h-4" />
-                      <span>{destination.location}</span>
+                <Select onValueChange={(value) => handleRouteSelect(value, 'to')} value={to}>
+                  <SelectTrigger>
+                    <div className="flex items-center">
+                      <MapPin className="mr-2 h-4 w-4 text-primary" />
+                      {to ? to : "To"}
                     </div>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="flex items-center">
-                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                        <span className="ml-1">{destination.rating}</span>
-                      </div>
-                      <span className="font-semibold">From {destination.price}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center gap-2 mb-3">
-                    <MessageCircle className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-medium">Latest Reviews</span>
-                  </div>
-                  <div className="space-y-3">
-                    {destination.reviews.map((review, index) => (
-                      <div key={index} className="border-b last:border-b-0 pb-3 last:pb-0">
-                        <div className="flex justify-between items-start mb-1">
-                          <span className="font-medium text-sm">{review.author}</span>
-                          <div className="flex items-center">
-                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                            <span className="text-xs ml-1">{review.rating}</span>
-                          </div>
-                        </div>
-                        <p className="text-sm text-gray-600">{review.comment}</p>
-                        <span className="text-xs text-gray-400">{review.date}</span>
-                      </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {locations.filter(loc => loc !== from).map((location) => (
+                      <SelectItem key={location} value={location}>
+                        {location}
+                      </SelectItem>
                     ))}
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </section>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !date && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={handleDateSelect}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                {availableTimes.length > 0 && (
+                  <Select onValueChange={setSelectedTime} value={selectedTime}>
+                    <SelectTrigger className="w-full">
+                      <div className="flex items-center">
+                        <Clock className="mr-2 h-4 w-4 text-primary" />
+                        {selectedTime ? selectedTime : "Select time"}
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableTimes.map((timeOption) => (
+                        <SelectItem key={timeOption} value={timeOption}>
+                          {timeOption}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+
+              <Button 
+                className="w-full bg-secondary hover:bg-secondary/90 text-white"
+                onClick={handleSearch}
+                disabled={!from || !to || !date || !selectedTime}
+              >
+                Search Tickets
+              </Button>
+            </div>
+          </section>
+        )}
       </main>
 
       <BottomNav />
