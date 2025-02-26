@@ -17,7 +17,7 @@ const Index = () => {
   const { toast } = useToast();
   const [showTutorial, setShowTutorial] = useState(true);
   const [showAuth, setShowAuth] = useState(true);
-  const [date, setDate] = useState<Date>();
+  const [userCredit] = useState(1000); // Example: 1000 DA initial credit
   const [from, setFrom] = useState<string>();
   const [to, setTo] = useState<string>();
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
@@ -44,6 +44,15 @@ const Index = () => {
     setShowAuth(false);
     toast({
       description: "Sign up functionality will be implemented soon",
+      duration: 2000,
+    });
+  };
+
+  const handleDestinationSelect = (destination: string) => {
+    setFrom("Béjaïa Center");
+    setTo(destination);
+    toast({
+      description: `Selected route: Béjaïa Center to ${destination}`,
       duration: 2000,
     });
   };
@@ -233,173 +242,86 @@ const Index = () => {
           <h1 className="text-3xl font-bold text-secondary mb-2">
             Explore Béjaïa
           </h1>
-          <p className="text-gray-600">Discover the beauty of Béjaïa</p>
+          <div className="flex justify-between items-center">
+            <p className="text-gray-600">Discover the beauty of Béjaïa</p>
+            <div className="bg-secondary/10 px-4 py-2 rounded-full">
+              <span className="font-semibold text-secondary">
+                Credit: {userCredit} DA
+              </span>
+            </div>
+          </div>
         </header>
 
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {featuredDestinations.map((destination) => (
-            <Card 
-              key={destination.title} 
-              className="overflow-hidden group hover:shadow-lg transition-all duration-300 cursor-pointer"
-              onClick={() => {
-                setFrom("Béjaïa Center"); // Default starting point
-                setTo(destination.location);
-                toast({
-                  description: `Selected destination: ${destination.location}`,
-                  duration: 2000,
-                });
-              }}
-            >
-              <div className="relative h-48">
-                <img
-                  src={destination.image}
-                  alt={destination.title}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-4 left-4 text-white">
-                  <h3 className="text-lg font-semibold">{destination.title}</h3>
-                  <div className="flex items-center gap-2 text-sm">
-                    <MapPin className="w-4 h-4" />
-                    <span>{destination.location}</span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="flex items-center">
-                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="ml-1">{destination.rating}</span>
-                    </div>
-                    <span className="font-semibold">From {destination.price}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <MessageCircle className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">Latest Reviews</span>
-                </div>
-                <div className="space-y-3">
-                  {destination.reviews.map((review, index) => (
-                    <div key={index} className="border-b last:border-b-0 pb-3 last:pb-0">
-                      <div className="flex justify-between items-start mb-1">
-                        <span className="font-medium text-sm">{review.author}</span>
-                        <div className="flex items-center">
-                          <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                          <span className="text-xs ml-1">{review.rating}</span>
-                        </div>
-                      </div>
-                      <p className="text-sm text-gray-600">{review.comment}</p>
-                      <span className="text-xs text-gray-400">{review.date}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Card>
-          ))}
-        </section>
-
-        {(from || to) && !showPayment && (
-          <section className="bg-white rounded-xl p-6 shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Book Your Trip</h2>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Select onValueChange={(value) => handleRouteSelect(value, 'from')} value={from}>
-                  <SelectTrigger>
-                    <div className="flex items-center">
-                      <MapPin className="mr-2 h-4 w-4 text-primary" />
-                      {from ? from : "From"}
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {locations.map((location) => (
-                      <SelectItem key={location} value={location}>
-                        {location}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select onValueChange={(value) => handleRouteSelect(value, 'to')} value={to}>
-                  <SelectTrigger>
-                    <div className="flex items-center">
-                      <MapPin className="mr-2 h-4 w-4 text-primary" />
-                      {to ? to : "To"}
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {locations.filter(loc => loc !== from).map((location) => (
-                      <SelectItem key={location} value={location}>
-                        {location}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? format(date, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={handleDateSelect}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-
-                {availableTimes.length > 0 && (
-                  <Select onValueChange={setSelectedTime} value={selectedTime}>
-                    <SelectTrigger className="w-full">
-                      <div className="flex items-center">
-                        <Clock className="mr-2 h-4 w-4 text-primary" />
-                        {selectedTime ? selectedTime : "Select time"}
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableTimes.map((timeOption) => (
-                        <SelectItem key={timeOption} value={timeOption}>
-                          {timeOption}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              </div>
-
-              <Button 
-                className="w-full bg-secondary hover:bg-secondary/90 text-white"
-                onClick={handleSearch}
-                disabled={!from || !to || !date || !selectedTime}
+        {!from && !to && (
+          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            {featuredDestinations.map((destination) => (
+              <Card 
+                key={destination.title} 
+                className="overflow-hidden group hover:shadow-lg transition-all duration-300 cursor-pointer"
+                onClick={() => handleDestinationSelect(destination.location)}
               >
-                Search Tickets
-              </Button>
-            </div>
+                <div className="relative h-48">
+                  <img
+                    src={destination.image}
+                    alt={destination.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-4 left-4 text-white">
+                    <h3 className="text-lg font-semibold">{destination.title}</h3>
+                    <div className="flex items-center gap-2 text-sm">
+                      <MapPin className="w-4 h-4" />
+                      <span>{destination.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center">
+                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                        <span className="ml-1">{destination.rating}</span>
+                      </div>
+                      <span className="font-semibold">From {destination.price}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <MessageCircle className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium">Latest Reviews</span>
+                  </div>
+                  <div className="space-y-3">
+                    {destination.reviews.map((review, index) => (
+                      <div key={index} className="border-b last:border-b-0 pb-3 last:pb-0">
+                        <div className="flex justify-between items-start mb-1">
+                          <span className="font-medium text-sm">{review.author}</span>
+                          <div className="flex items-center">
+                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                            <span className="text-xs ml-1">{review.rating}</span>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600">{review.comment}</p>
+                        <span className="text-xs text-gray-400">{review.date}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            ))}
           </section>
         )}
 
-        {showPayment && from && to && date && selectedTime && (
+        {from && to && (
           <div className="space-y-6">
             <RouteMap from={from} to={to} />
-            <PaymentForm
-              price="200 DA"
-              from={from}
-              to={to}
-              date={date}
-              time={selectedTime}
-              onSuccess={handlePaymentSuccess}
-            />
+            <div className="flex justify-end">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setFrom(undefined);
+                  setTo(undefined);
+                }}
+              >
+                Choose Another Route
+              </Button>
+            </div>
           </div>
         )}
       </main>
