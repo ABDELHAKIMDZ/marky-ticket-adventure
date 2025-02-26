@@ -20,6 +20,7 @@ const Index = () => {
   const [userCredit] = useState(1000); // Example: 1000 DA initial credit
   const [from, setFrom] = useState<string>();
   const [to, setTo] = useState<string>();
+  const [date, setDate] = useState<Date>();
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [selectedTime, setSelectedTime] = useState<string>();
   const [showPayment, setShowPayment] = useState(false);
@@ -54,6 +55,62 @@ const Index = () => {
     toast({
       description: `Selected route: Béjaïa Center to ${destination}`,
       duration: 2000,
+    });
+  };
+
+  const fetchAvailableTimes = (from: string, to: string, date: Date) => {
+    const times: string[] = [];
+    const startHour = 6;
+    const endHour = 22;
+    
+    for (let hour = startHour; hour <= endHour; hour++) {
+      if (Math.random() > 0.5) {
+        times.push(`${hour.toString().padStart(2, '0')}:00`);
+      }
+      if (Math.random() > 0.5) {
+        times.push(`${hour.toString().padStart(2, '0')}:30`);
+      }
+    }
+    
+    return times.sort();
+  };
+
+  const handleDateSelect = (newDate: Date | undefined) => {
+    setDate(newDate);
+    if (newDate && from && to) {
+      const times = fetchAvailableTimes(from, to, newDate);
+      setAvailableTimes(times);
+      setSelectedTime(undefined);
+    }
+  };
+
+  const handleRouteSelect = (value: string, type: 'from' | 'to') => {
+    if (type === 'from') {
+      setFrom(value);
+    } else {
+      setTo(value);
+    }
+    
+    if (date && ((type === 'from' && to) || (type === 'to' && from))) {
+      const times = fetchAvailableTimes(type === 'from' ? value : from!, type === 'to' ? value : to!, date);
+      setAvailableTimes(times);
+      setSelectedTime(undefined);
+    }
+  };
+
+  const handleSearch = () => {
+    if (from && to && date && selectedTime) {
+      setShowPayment(true);
+      toast({
+        description: "Please complete payment to get your ticket",
+      });
+    }
+  };
+
+  const handlePaymentSuccess = () => {
+    toast({
+      title: "Success!",
+      description: "Your ticket is ready. You can find it in the Tickets section.",
     });
   };
 
@@ -131,62 +188,6 @@ const Index = () => {
     "Souk El Tennine",
     "Akbou"
   ];
-
-  const fetchAvailableTimes = (from: string, to: string, date: Date) => {
-    const times: string[] = [];
-    const startHour = 6;
-    const endHour = 22;
-    
-    for (let hour = startHour; hour <= endHour; hour++) {
-      if (Math.random() > 0.5) {
-        times.push(`${hour.toString().padStart(2, '0')}:00`);
-      }
-      if (Math.random() > 0.5) {
-        times.push(`${hour.toString().padStart(2, '0')}:30`);
-      }
-    }
-    
-    return times.sort();
-  };
-
-  const handleDateSelect = (newDate: Date | undefined) => {
-    setDate(newDate);
-    if (newDate && from && to) {
-      const times = fetchAvailableTimes(from, to, newDate);
-      setAvailableTimes(times);
-      setSelectedTime(undefined);
-    }
-  };
-
-  const handleRouteSelect = (value: string, type: 'from' | 'to') => {
-    if (type === 'from') {
-      setFrom(value);
-    } else {
-      setTo(value);
-    }
-    
-    if (date && ((type === 'from' && to) || (type === 'to' && from))) {
-      const times = fetchAvailableTimes(type === 'from' ? value : from!, type === 'to' ? value : to!, date);
-      setAvailableTimes(times);
-      setSelectedTime(undefined);
-    }
-  };
-
-  const handleSearch = () => {
-    if (from && to && date && selectedTime) {
-      setShowPayment(true);
-      toast({
-        description: "Please complete payment to get your ticket",
-      });
-    }
-  };
-
-  const handlePaymentSuccess = () => {
-    toast({
-      title: "Success!",
-      description: "Your ticket is ready. You can find it in the Tickets section.",
-    });
-  };
 
   if (showAuth) {
     return (
