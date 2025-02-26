@@ -10,6 +10,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { PaymentForm } from "@/components/PaymentForm";
+import { RouteMap } from "@/components/RouteMap";
 
 const Index = () => {
   const { toast } = useToast();
@@ -20,6 +22,7 @@ const Index = () => {
   const [to, setTo] = useState<string>();
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [selectedTime, setSelectedTime] = useState<string>();
+  const [showPayment, setShowPayment] = useState(false);
 
   const handleSkip = () => {
     setShowAuth(false);
@@ -161,17 +164,18 @@ const Index = () => {
   };
 
   const handleSearch = () => {
-    if (!from || !to || !date || !selectedTime) {
+    if (from && to && date && selectedTime) {
+      setShowPayment(true);
       toast({
-        description: "Please select all trip details",
-        duration: 2000,
+        description: "Please complete payment to get your ticket",
       });
-      return;
     }
-    
+  };
+
+  const handlePaymentSuccess = () => {
     toast({
-      description: `Searching for tickets from ${from} to ${to} on ${format(date, "PPP")} at ${selectedTime}`,
-      duration: 3000,
+      title: "Success!",
+      description: "Your ticket is ready. You can find it in the Tickets section.",
     });
   };
 
@@ -293,7 +297,7 @@ const Index = () => {
           ))}
         </section>
 
-        {(from || to) && (
+        {(from || to) && !showPayment && (
           <section className="bg-white rounded-xl p-6 shadow-lg">
             <h2 className="text-xl font-semibold mb-4">Book Your Trip</h2>
             <div className="space-y-4">
@@ -383,6 +387,20 @@ const Index = () => {
               </Button>
             </div>
           </section>
+        )}
+
+        {showPayment && from && to && date && selectedTime && (
+          <div className="space-y-6">
+            <RouteMap from={from} to={to} />
+            <PaymentForm
+              price="200 DA"
+              from={from}
+              to={to}
+              date={date}
+              time={selectedTime}
+              onSuccess={handlePaymentSuccess}
+            />
+          </div>
         )}
       </main>
 
