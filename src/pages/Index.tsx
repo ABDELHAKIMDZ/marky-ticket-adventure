@@ -27,7 +27,8 @@ import {
   Minus,
   X,
   Check,
-  Share
+  Share,
+  LogOut
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Calendar } from "@/components/ui/calendar";
@@ -131,7 +132,7 @@ interface Promotion {
 const Index = () => {
   const { toast } = useToast();
   const [showTutorial, setShowTutorial] = useState(true);
-  const [showAuth, setShowAuth] = useState(true);
+  const [showAuth, setShowAuth] = useState(false);
   const [userCredit, setUserCredit] = useState(1000); // Example: 1000 DA initial credit
   const [from, setFrom] = useState<string>();
   const [to, setTo] = useState<string>();
@@ -213,6 +214,12 @@ const Index = () => {
     }
   ]);
 
+  // Handle tutorial completion - now shows auth page
+  const handleTutorialComplete = () => {
+    setShowTutorial(false);
+    setShowAuth(true);
+  };
+
   const handleSkip = () => {
     setShowAuth(false);
     toast({
@@ -255,6 +262,22 @@ const Index = () => {
       name: "New User",
       notifications: true,
       points: 100
+    });
+  };
+
+  const handleSignOut = () => {
+    setShowAuth(true);
+    setUserProfile({
+      name: "Guest User",
+      email: "guest@example.com",
+      notifications: true,
+      favorites: [],
+      points: 250
+    });
+    
+    toast({
+      description: "Signed out successfully",
+      duration: 2000,
     });
   };
 
@@ -790,6 +813,12 @@ const Index = () => {
     }
   ]);
 
+  // First show the tutorial/welcome page
+  if (showTutorial) {
+    return <Tutorial onComplete={handleTutorialComplete} />;
+  }
+
+  // Then show the auth page after completing the tutorial
   if (showAuth) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -835,10 +864,9 @@ const Index = () => {
     );
   }
 
+  // Finally show the main app after authentication
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      {showTutorial && <Tutorial onComplete={() => setShowTutorial(false)} />}
-      
       <main className="container mx-auto px-4 py-6 animate-fade-in">
         <header className="mb-4 sm:mb-8">
           <div className="flex justify-between items-center mb-4">
@@ -945,6 +973,21 @@ const Index = () => {
                         </div>
                       )}
                     </div>
+                    
+                    <div className="border-t pt-4">
+                      <Button 
+                        variant="destructive" 
+                        size="sm" 
+                        className="w-full mt-2"
+                        onClick={() => {
+                          setProfileOpen(false);
+                          handleSignOut();
+                        }}
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </Button>
+                    </div>
                   </div>
                   <SheetFooter>
                     <SheetClose asChild>
@@ -1005,6 +1048,16 @@ const Index = () => {
                   </div>
                 </PopoverContent>
               </Popover>
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleSignOut}
+                className="hidden sm:flex items-center"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
             </div>
           </div>
           
