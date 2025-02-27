@@ -1,9 +1,10 @@
+
 import { useState } from "react";
 import { Tutorial } from "@/components/Tutorial";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Clock, MapPin, Star, MessageCircle, LogIn, UserPlus, ArrowRight } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar as CalendarIcon, Clock, MapPin, Star, MessageCircle, LogIn, UserPlus, ArrowRight, Ticket, QrCode } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -12,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils";
 import { PaymentForm } from "@/components/PaymentForm";
 import { RouteMap } from "@/components/RouteMap";
+import QRCodeGenerator from 'qrcode';
 
 const Index = () => {
   const { toast } = useToast();
@@ -23,7 +25,11 @@ const Index = () => {
   const [date, setDate] = useState<Date>();
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [selectedTime, setSelectedTime] = useState<string>();
-  const [showPayment, setShowPayment] = useState(false);
+  const [showRouteMap, setShowRouteMap] = useState(false);
+  const [showReservationDetails, setShowReservationDetails] = useState(false);
+  const [ticketPrice, setTicketPrice] = useState(0);
+  const [qrCodeData, setQrCodeData] = useState('');
+  const [ticketId, setTicketId] = useState('');
 
   const handleSkip = () => {
     setShowAuth(false);
@@ -52,6 +58,25 @@ const Index = () => {
   const handleDestinationSelect = (destination: string) => {
     setFrom("Béjaïa Center");
     setTo(destination);
+    setShowRouteMap(true);
+    
+    // Generate price based on destination (example)
+    const prices = {
+      "Tichy": 150,
+      "Aokas": 180,
+      "Gouraya": 200,
+      "Souk El Tennine": 250,
+      "Akbou": 300
+    };
+    
+    setTicketPrice(prices[destination as keyof typeof prices] || 150);
+    
+    // Reset other fields
+    setDate(undefined);
+    setSelectedTime(undefined);
+    setAvailableTimes([]);
+    setShowReservationDetails(false);
+    
     toast({
       description: `Selected route: Béjaïa Center to ${destination}`,
       duration: 2000,
@@ -84,34 +109,61 @@ const Index = () => {
     }
   };
 
-  const handleRouteSelect = (value: string, type: 'from' | 'to') => {
-    if (type === 'from') {
-      setFrom(value);
-    } else {
-      setTo(value);
-    }
-    
-    if (date && ((type === 'from' && to) || (type === 'to' && from))) {
-      const times = fetchAvailableTimes(type === 'from' ? value : from!, type === 'to' ? value : to!, date);
-      setAvailableTimes(times);
-      setSelectedTime(undefined);
-    }
+  const handleTimeSelect = (time: string) => {
+    setSelectedTime(time);
   };
 
-  const handleSearch = () => {
-    if (from && to && date && selectedTime) {
-      setShowPayment(true);
+  const handleReservation = async () => {
+    if (!from || !to || !date || !selectedTime) {
       toast({
-        description: "Please complete payment to get your ticket",
+        title: "Error",
+        description: "Please select all trip details",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Generate ticket ID
+    const newTicketId = Math.random().toString(36).substring(2, 10).toUpperCase();
+    setTicketId(newTicketId);
+
+    // Create ticket data for QR code
+    const ticketData = {
+      id: newTicketId,
+      from,
+      to,
+      date: format(date, 'yyyy-MM-dd'),
+      time: selectedTime,
+      price: ticketPrice,
+      issued: new Date().toISOString(),
+    };
+
+    try {
+      // Generate QR code
+      const qrCode = await QRCodeGenerator.toDataURL(JSON.stringify(ticketData));
+      setQrCodeData(qrCode);
+      setShowReservationDetails(true);
+
+      toast({
+        title: "Success!",
+        description: "Your ticket has been reserved",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate ticket QR code",
+        variant: "destructive",
       });
     }
   };
 
-  const handlePaymentSuccess = () => {
-    toast({
-      title: "Success!",
-      description: "Your ticket is ready. You can find it in the Tickets section.",
-    });
+  const resetReservation = () => {
+    setFrom(undefined);
+    setTo(undefined);
+    setDate(undefined);
+    setSelectedTime(undefined);
+    setShowRouteMap(false);
+    setShowReservationDetails(false);
   };
 
   const featuredDestinations = [
@@ -141,7 +193,7 @@ const Index = () => {
       image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
       price: "150 DA",
       rating: 4.9,
-      location: "Tichy, Béjaïa",
+      location: "Tichy",
       reviews: [
         {
           author: "Ahmed L.",
@@ -162,7 +214,7 @@ const Index = () => {
       image: "https://images.unsplash.com/photo-1565019011521-b0456c7a1405",
       price: "300 DA",
       rating: 4.7,
-      location: "Gouraya, Béjaïa",
+      location: "Gouraya",
       reviews: [
         {
           author: "Yacine R.",
@@ -178,15 +230,6 @@ const Index = () => {
         }
       ]
     }
-  ];
-
-  const locations = [
-    "Béjaïa Center",
-    "Tichy",
-    "Aokas",
-    "Gouraya",
-    "Souk El Tennine",
-    "Akbou"
   ];
 
   if (showAuth) {
@@ -309,21 +352,180 @@ const Index = () => {
           </section>
         )}
 
-        {from && to && (
+        {from && to && !showReservationDetails && (
           <div className="space-y-6">
-            <RouteMap from={from} to={to} />
-            <div className="flex justify-end">
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setFrom(undefined);
-                  setTo(undefined);
-                }}
-              >
-                Choose Another Route
-              </Button>
-            </div>
+            {showRouteMap && (
+              <RouteMap from={from} to={to} />
+            )}
+            
+            <Card className="p-6">
+              <CardHeader className="px-0 pt-0">
+                <CardTitle>Book Your Trip</CardTitle>
+              </CardHeader>
+              <CardContent className="px-0 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">From</label>
+                    <div className="bg-gray-100 p-3 rounded-md">
+                      {from}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-1">To</label>
+                    <div className="bg-gray-100 p-3 rounded-md">
+                      {to}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Date</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !date && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {date ? format(date, "PPP") : <span>Select a date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={handleDateSelect}
+                          initialFocus
+                          disabled={(date) => date < new Date()}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Time</label>
+                    <Select
+                      disabled={availableTimes.length === 0}
+                      value={selectedTime}
+                      onValueChange={handleTimeSelect}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a time" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableTimes.map((time) => (
+                          <SelectItem key={time} value={time}>
+                            <div className="flex items-center">
+                              <Clock className="mr-2 h-4 w-4" />
+                              {time}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="pt-4 flex justify-between items-center">
+                  <div>
+                    {selectedTime && (
+                      <div className="font-medium">
+                        Price: <span className="text-primary">{ticketPrice} DA</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="ghost" 
+                      onClick={resetReservation}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={handleReservation}
+                      disabled={!from || !to || !date || !selectedTime}
+                    >
+                      <Ticket className="mr-2 h-4 w-4" />
+                      Reserve
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
+        )}
+
+        {showReservationDetails && (
+          <Card className="overflow-hidden">
+            <div className="bg-primary text-white p-6">
+              <h2 className="text-xl font-bold mb-1">Ticket Confirmation</h2>
+              <p className="opacity-90">Your ticket has been reserved successfully</p>
+            </div>
+            <CardContent className="p-6">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Ticket ID</p>
+                    <p className="font-medium">{ticketId}</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-500">From</p>
+                      <p className="font-medium">{from}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">To</p>
+                      <p className="font-medium">{to}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-500">Date</p>
+                      <p className="font-medium">{date && format(date, 'PPP')}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Time</p>
+                      <p className="font-medium">{selectedTime}</p>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500">Price</p>
+                    <p className="font-medium text-lg text-primary">{ticketPrice} DA</p>
+                  </div>
+                  
+                  <div className="pt-4">
+                    <Button 
+                      onClick={resetReservation} 
+                      className="w-full"
+                    >
+                      Book Another Ticket
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col items-center justify-center">
+                  <div className="bg-white p-4 rounded-lg shadow-md mb-4 max-w-[200px]">
+                    {qrCodeData && (
+                      <img src={qrCodeData} alt="Ticket QR Code" className="w-full h-auto" />
+                    )}
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-500 mb-2">Scan this QR code to validate your ticket</p>
+                    <div className="flex items-center justify-center gap-1 text-primary">
+                      <QrCode className="h-4 w-4" />
+                      <span className="text-sm font-medium">Valid for one use only</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         )}
       </main>
 
