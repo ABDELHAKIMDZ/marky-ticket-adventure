@@ -54,6 +54,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Sheet,
@@ -156,6 +157,8 @@ const Index = () => {
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [reviewDestination, setReviewDestination] = useState<Destination | null>(null);
   const [shareTicketUrl, setShareTicketUrl] = useState("");
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const [showTicketDetailsDialog, setShowTicketDetailsDialog] = useState(false);
   
   // User profile state
   const [userProfile, setUserProfile] = useState<Profile>({
@@ -323,11 +326,13 @@ const Index = () => {
   };
 
   const handleDateSelect = (newDate: Date | undefined) => {
-    setDate(newDate);
-    if (newDate && from && to) {
-      const times = fetchAvailableTimes(from, to, newDate);
-      setAvailableTimes(times);
-      setSelectedTime(undefined);
+    if (newDate) {
+      setDate(newDate);
+      if (from && to) {
+        const times = fetchAvailableTimes(from, to, newDate);
+        setAvailableTimes(times);
+        setSelectedTime(undefined);
+      }
     }
   };
 
@@ -635,6 +640,11 @@ const Index = () => {
       description: "All notifications cleared",
       duration: 2000,
     });
+  };
+
+  const viewTicket = (ticket: Ticket) => {
+    setSelectedTicket(ticket);
+    setShowTicketDetailsDialog(true);
   };
 
   const [featuredDestinations, setFeaturedDestinations] = useState<Destination[]>([
@@ -1242,8 +1252,10 @@ const Index = () => {
                               mode="single"
                               selected={date}
                               onSelect={handleDateSelect}
+                              disabled={(date) => 
+                                date < new Date(new Date().setHours(0, 0, 0, 0)) // Compare dates at start of day
+                              }
                               initialFocus
-                              disabled={(date) => date < new Date()}
                             />
                           </PopoverContent>
                         </Popover>
@@ -1566,13 +1578,7 @@ const Index = () => {
                           variant="ghost" 
                           size="sm" 
                           className="h-8"
-                          onClick={() => {
-                            // Show ticket details
-                            toast({
-                              description: "View ticket details feature coming soon",
-                              duration: 2000,
-                            });
-                          }}
+                          onClick={() => viewTicket(ticket)}
                         >
                           <QrCode className="h-3 w-3 mr-1" />
                           View Ticket
@@ -1743,6 +1749,99 @@ const Index = () => {
               Submit Review
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Ticket Details Dialog */}
+      <Dialog open={showTicketDetailsDialog} onOpenChange={setShowTicketDetailsDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Ticket Details</DialogTitle>
+            <DialogDescription>
+              View your ticket information and QR code
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedTicket && (
+            <div className="space-y-4">
+              <div className="bg-primary/10 p-4 rounded-lg flex justify-between">
+                <div>
+                  <h3 className="font-medium text-primary">Ticket #{selectedTicket.id}</h3>
+                  <p className="text-sm text-gray-600">
+                    {new Date(selectedTicket.issued).toLocaleString()}
+                  </p>
+                </div>
+                <Badge variant={selectedTicket.status === "unused" ? "default" : 
+                    selectedTicket.status === "used" ? "secondary" : "destructive"}>
+                  {selectedTicket.status}
+                </Badge>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg shadow-sm border flex justify-center mb-2">
+                {selectedTicket.qrCode ? (
+                  <img src={selectedTicket.qrCode} alt="Ticket QR Code" className="w-48 h-48" />
+                ) : (
+                  <div className="w-48 h-48 border-dashed border-2 flex items-center justify-center text-gray-400">
+                    <QrCode className="h-10 w-10" />
+                  </div>
+                )}
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-gray-500">From</p>
+                  <p className="font-medium">{selectedTicket.from}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">To</p>
+                  <p className="font-medium">{selectedTicket.to}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">Date</p>
+                  <p className="font-medium">{selectedTicket.date}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">Time</p>
+                  <p className="font-medium">{selectedTicket.time}</p>
+                </div>
+              </div>
+              
+              {selectedTicket.stops && selectedTicket.stops.length > 0 && (
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Via</p>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedTicket.stops.map((stop, idx) => (
+                      <Badge key={idx} variant="outline">
+                        {stop}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              <div className="border-t pt-3 mt-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Price</span>
+                  <span className="font-bold text-primary">{selectedTicket.price} DA</span>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter className="gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowTicketDetailsDialog(false)}
+            >
+              Close
+            </Button>
+            {selectedTicket && (
+              <Button onClick={() => handleShareTicket(selectedTicket)}>
+                <Share className="h-4 w-4 mr-2" />
+                Share Ticket
+              </Button>
+            )}
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
