@@ -38,10 +38,10 @@
  
   .dark {
     --background: 222.2 84% 4.9%; /* Darker background for better contrast */
-    --foreground: 210 40% 98%;
+    --foreground: 210 40% 98%; /* White text in dark mode */
  
     --card: 217 33% 17%; /* Darker card background */
-    --card-foreground: 210 40% 98%;
+    --card-foreground: 210 40% 98%; /* White text in cards */
  
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
@@ -114,3 +114,4 @@
 .dark .dark-border {
   @apply border-gray-700;
 }
+
