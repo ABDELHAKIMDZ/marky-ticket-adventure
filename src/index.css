@@ -37,10 +37,10 @@
   }
  
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222.2 84% 4.9%; /* Darker background for better contrast */
     --foreground: 210 40% 98%;
  
-    --card: 222.2 84% 4.9%;
+    --card: 217 33% 17%; /* Darker card background */
     --card-foreground: 210 40% 98%;
  
     --popover: 222.2 84% 4.9%;
@@ -56,7 +56,7 @@
     --muted-foreground: 215 20.2% 65.1%;
  
     --accent: 182 69% 58%; /* #4ADEDE as accent color */
-    --accent-foreground: 210 40% 98%;
+    --accent-foreground: 222.2 47.4% 11.2%; /* Darker text on accent for readability */
  
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
@@ -72,7 +72,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
 }
 
@@ -100,4 +100,17 @@
   to {
     transform: translateY(0);
   }
+}
+
+/* Dark mode specific adjustments */
+.dark .dark-card {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.dark .dark-text-primary {
+  @apply text-teal;
+}
+
+.dark .dark-border {
+  @apply border-gray-700;
 }

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/components/BottomNav";
 import { 
@@ -37,10 +37,8 @@ const Settings = () => {
     
     if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
       setIsDarkMode(true);
-      document.documentElement.classList.add("dark");
     } else {
       setIsDarkMode(false);
-      document.documentElement.classList.remove("dark");
     }
   }, []);
   
@@ -78,48 +76,50 @@ const Settings = () => {
   const [settings] = useState<SettingItem[]>([
     {
       id: "notifications",
-      icon: <Bell className="text-blue-500" />,
+      icon: <Bell className="text-blue-500 dark:text-blue-400" />,
       title: "Notifications",
       description: "Manage your notification preferences",
     },
     {
       id: "appearance",
-      icon: isDarkMode ? <Moon className="text-purple-500" /> : <Sun className="text-yellow-500" />,
+      icon: isDarkMode ? 
+        <Moon className="text-purple-500 dark:text-purple-400" /> : 
+        <Sun className="text-yellow-500 dark:text-yellow-400" />,
       title: "Appearance",
       description: "Dark mode and theme settings",
     },
     {
       id: "payment",
-      icon: <CreditCard className="text-green-500" />,
+      icon: <CreditCard className="text-green-500 dark:text-green-400" />,
       title: "Payment Methods",
       description: "Manage your payment options",
     },
     {
       id: "privacy",
-      icon: <Shield className="text-red-500" />,
+      icon: <Shield className="text-red-500 dark:text-red-400" />,
       title: "Privacy & Security",
       description: "Configure your privacy settings",
     },
     {
       id: "language",
-      icon: <Languages className="text-orange-500" />,
+      icon: <Languages className="text-orange-500 dark:text-orange-400" />,
       title: "Language",
       description: "Change your preferred language",
     },
     {
       id: "help",
-      icon: <HelpCircle className="text-teal-500" />,
+      icon: <HelpCircle className="text-teal dark:text-teal" />,
       title: "Help & Support",
       description: "Get help with your account",
     },
   ]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 transition-colors duration-300">
       <main className="container mx-auto px-4 py-6">
         <header className="mb-6">
-          <h1 className="text-2xl font-bold text-secondary dark:text-gray-100 flex items-center gap-2">
-            <SettingsIcon className="text-primary" />
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <SettingsIcon className="text-primary dark:text-primary" />
             Settings
           </h1>
         </header>
@@ -128,9 +128,9 @@ const Settings = () => {
           {settings.map((setting) => (
             <Card 
               key={setting.id}
-              className={`animate-fade-in cursor-pointer hover:shadow-md transition-all ${
-                setting.id === "appearance" ? "bg-primary/5" : ""
-              } dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100`}
+              className={`animate-fade-in cursor-pointer hover:shadow-md transition-all dark-card
+                ${setting.id === "appearance" ? "bg-primary/5 dark:bg-primary/10" : ""}
+              `}
               onClick={() => {
                 if (setting.id === "appearance") {
                   toggleDarkMode();
@@ -147,7 +147,7 @@ const Settings = () => {
                       <h3 className="font-medium text-gray-900 dark:text-gray-100">
                         {setting.title}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
                         {setting.description}
                       </p>
                     </div>
