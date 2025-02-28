@@ -30,7 +30,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="transition-colors duration-300">
+        <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
           <Toaster />
           <Sonner />
           <BrowserRouter>
