@@ -74,6 +74,16 @@
   body {
     @apply bg-background text-foreground transition-colors duration-300;
   }
+  html {
+    @apply bg-background; /* Ensure HTML element also has background color */
+  }
+}
+
+/* Make sure all main containers use background color */
+#root, 
+.min-h-screen,
+main {
+  @apply bg-background text-foreground;
 }
 
 .animate-fade-in {
@@ -115,3 +125,26 @@
   @apply border-gray-700;
 }
 
+/* Fix for light text in dark mode */
+.dark h1, 
+.dark h2, 
+.dark h3, 
+.dark h4, 
+.dark h5, 
+.dark h6, 
+.dark p, 
+.dark span, 
+.dark div,
+.dark a {
+  @apply text-foreground;
+}
+
+/* Ensure container backgrounds are properly colored */
+.dark .bg-white {
+  @apply bg-gray-900;
+}
+
+.dark .bg-gray-50,
+.dark .bg-gray-100 {
+  @apply bg-gray-800;
+}
