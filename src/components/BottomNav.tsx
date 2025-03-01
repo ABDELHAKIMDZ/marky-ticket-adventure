@@ -1,4 +1,3 @@
-
 import { Home, Bell, Settings } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -10,10 +9,9 @@ export const BottomNav = () => {
 
   const handleHomeClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    // Set tutorial as completed and navigate to home
-    localStorage.setItem("tutorialCompleted", "true");
-    // Force a redirect to home page
-    window.location.href = "/";
+    // Mark tutorial as completed but use proper navigation
+    localStorage.setItem("tutorialCompleted", "false"); // Set to false to show tutorial
+    navigate("/"); // Use React Router navigation instead of window.location
   };
 
   return (
