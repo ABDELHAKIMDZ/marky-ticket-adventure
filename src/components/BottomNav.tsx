@@ -10,6 +10,8 @@ export const BottomNav = () => {
 
   const handleHomeClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    // Ensure tutorial is marked as completed when navigating directly to home
+    localStorage.setItem("tutorialCompleted", "true");
     navigate("/");
   };
 
