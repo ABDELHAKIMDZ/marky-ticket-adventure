@@ -34,6 +34,27 @@ export const Tutorial = ({ onComplete }: { onComplete: () => void }) => {
     }
   }, [onComplete]);
 
+  // Force check on mount and when localStorage changes
+  useEffect(() => {
+    const checkTutorialStatus = () => {
+      const completed = localStorage.getItem("tutorialCompleted") === "true";
+      if (completed) {
+        setShouldShow(false);
+        onComplete();
+      }
+    };
+    
+    // Check initially
+    checkTutorialStatus();
+    
+    // Set up event listener for storage changes (in case another tab/component changes it)
+    window.addEventListener('storage', checkTutorialStatus);
+    
+    return () => {
+      window.removeEventListener('storage', checkTutorialStatus);
+    };
+  }, [onComplete]);
+
   const handleNext = () => {
     if (currentStep < tutorialSteps.length - 1) {
       setCurrentStep(currentStep + 1);
