@@ -1,23 +1,30 @@
 
 import { Home, Bell, Settings } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export const BottomNav = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path: string) => location.pathname === path;
 
+  const handleHomeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate("/");
+  };
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-gray-900/90 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 py-2 px-4 flex justify-around items-center animate-slide-up">
-      <Link
-        to="/"
+      <a
+        href="#"
+        onClick={handleHomeClick}
         className={`flex flex-col items-center space-y-1 ${
           isActive("/") ? "text-primary" : "text-gray-600 dark:text-gray-400"
         }`}
       >
         <Home size={24} />
         <span className="text-xs">Home</span>
-      </Link>
+      </a>
       
       <Link
         to="/notifications"
