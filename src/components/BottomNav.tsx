@@ -10,9 +10,7 @@ export const BottomNav = () => {
 
   const handleHomeClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    // Properly navigate to home page without showing tutorial again
-    localStorage.setItem("tutorialCompleted", "true"); // Set to true to skip tutorial
-    navigate("/"); // Use React Router navigation
+    navigate("/"); // Simply navigate to home without modifying localStorage
   };
 
   return (

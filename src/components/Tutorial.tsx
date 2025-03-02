@@ -26,33 +26,12 @@ export const Tutorial = ({ onComplete }: { onComplete: () => void }) => {
   const [shouldShow, setShouldShow] = useState(true);
   
   useEffect(() => {
-    // Check if the tutorial has been completed
+    // Check if the tutorial has been completed before
     const tutorialCompleted = localStorage.getItem("tutorialCompleted");
     if (tutorialCompleted === "true") {
       setShouldShow(false);
-      onComplete(); // Skip tutorial immediately
+      onComplete();
     }
-  }, [onComplete]);
-
-  // Force check on mount and when localStorage changes
-  useEffect(() => {
-    const checkTutorialStatus = () => {
-      const completed = localStorage.getItem("tutorialCompleted") === "true";
-      if (completed) {
-        setShouldShow(false);
-        onComplete();
-      }
-    };
-    
-    // Check initially
-    checkTutorialStatus();
-    
-    // Set up event listener for storage changes (in case another tab/component changes it)
-    window.addEventListener('storage', checkTutorialStatus);
-    
-    return () => {
-      window.removeEventListener('storage', checkTutorialStatus);
-    };
   }, [onComplete]);
 
   const handleNext = () => {
@@ -61,6 +40,7 @@ export const Tutorial = ({ onComplete }: { onComplete: () => void }) => {
     } else {
       // Mark tutorial as completed
       localStorage.setItem("tutorialCompleted", "true");
+      setShouldShow(false);
       onComplete();
     }
   };
@@ -68,6 +48,7 @@ export const Tutorial = ({ onComplete }: { onComplete: () => void }) => {
   const handleSkip = () => {
     // Mark tutorial as completed when skipped
     localStorage.setItem("tutorialCompleted", "true");
+    setShouldShow(false);
     onComplete();
   };
 

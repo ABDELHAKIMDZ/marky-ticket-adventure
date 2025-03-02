@@ -25,6 +25,11 @@ const App = () => {
     } else {
       document.documentElement.classList.remove("dark");
     }
+    
+    // Initialize tutorial state if not already set
+    if (localStorage.getItem("tutorialCompleted") === null) {
+      localStorage.setItem("tutorialCompleted", "false");
+    }
   }, []);
 
   return (
