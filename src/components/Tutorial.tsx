@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -23,38 +23,14 @@ const tutorialSteps = [
 
 export const Tutorial = ({ onComplete }: { onComplete: () => void }) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [shouldShow, setShouldShow] = useState(true);
-  
-  useEffect(() => {
-    // Check if the tutorial has been completed before
-    const tutorialCompleted = localStorage.getItem("tutorialCompleted");
-    if (tutorialCompleted === "true") {
-      setShouldShow(false);
-      onComplete();
-    }
-  }, [onComplete]);
 
   const handleNext = () => {
     if (currentStep < tutorialSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Mark tutorial as completed
-      localStorage.setItem("tutorialCompleted", "true");
-      setShouldShow(false);
       onComplete();
     }
   };
-
-  const handleSkip = () => {
-    // Mark tutorial as completed when skipped
-    localStorage.setItem("tutorialCompleted", "true");
-    setShouldShow(false);
-    onComplete();
-  };
-
-  if (!shouldShow) {
-    return null;
-  }
 
   return (
     <div className="fixed inset-0 bg-white z-50">
@@ -97,7 +73,7 @@ export const Tutorial = ({ onComplete }: { onComplete: () => void }) => {
               <div className="flex space-x-4">
                 <Button
                   variant="ghost"
-                  onClick={handleSkip}
+                  onClick={onComplete}
                   className="text-gray-600"
                 >
                   Skip

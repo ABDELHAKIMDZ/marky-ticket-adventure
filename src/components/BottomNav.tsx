@@ -10,7 +10,7 @@ export const BottomNav = () => {
 
   const handleHomeClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    navigate("/"); // Simply navigate to home without modifying localStorage
+    navigate("/");
   };
 
   return (
