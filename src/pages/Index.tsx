@@ -1,132 +1,33 @@
+
 import { useState, useEffect } from "react";
 import { Tutorial } from "@/components/Tutorial";
 import { BottomNav } from "@/components/BottomNav";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { 
-  Calendar as CalendarIcon, 
-  Clock, 
-  MapPin, 
-  Star, 
-  MessageCircle, 
-  LogIn, 
-  UserPlus, 
-  ArrowRight, 
-  Ticket, 
-  QrCode, 
-  Share2, 
-  UserCircle, 
-  History, 
-  Bell, 
-  Heart, 
-  Tag, 
-  Route, 
-  AlertCircle,
-  Plus,
-  Minus,
-  X,
-  Check,
-  Share,
-  LogOut
-} from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { PaymentForm } from "@/components/PaymentForm";
-import { RouteMap } from "@/components/RouteMap";
-import QRCodeGenerator from 'qrcode';
-import copy from 'clipboard-copy';
+import { Card } from "@/components/ui/card";
 import { 
   Tabs, 
   TabsContent, 
   TabsList, 
   TabsTrigger 
 } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
+import { 
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
   DialogTitle,
-  DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetFooter,
-  SheetClose
-} from "@/components/ui/sheet";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { AuthScreen } from "@/components/auth/AuthScreen";
+import { DestinationCard } from "@/components/destinations/DestinationCard";
+import { BookingForm } from "@/components/bookings/BookingForm";
+import { TicketDetails } from "@/components/tickets/TicketDetails";
+import { UserProfileSheet } from "@/components/profile/UserProfileSheet";
+import { ReviewDialog } from "@/components/reviews/ReviewDialog";
+import { PromotionCard } from "@/components/promotions/PromotionCard";
+import { RouteMap } from "@/components/RouteMap";
 
-interface Destination {
-  id: string;
-  title: string;
-  image: string;
-  price: string;
-  priceValue: number;
-  rating: number;
-  location: string;
-  reviews: Review[];
-  description?: string;
-  distance?: string;
-  travelTime?: string;
-}
-
-interface Review {
-  id?: string;
-  author: string;
-  comment: string;
-  rating: number;
-  date: string;
-  authorAvatar?: string;
-}
-
-interface Ticket {
-  id: string;
-  from: string;
-  to: string;
-  date: string;
-  time: string;
-  price: number;
-  status: "unused" | "used" | "expired";
-  qrCode?: string;
-  issued: string;
-  stops?: string[];
-  delay?: string;
-}
-
-interface Profile {
-  name: string;
-  email: string;
-  avatar?: string;
-  phone?: string;
-  preferredPayment?: string;
-  notifications: boolean;
-  favorites: string[];
-  points: number;
-}
-
-interface Promotion {
-  id: string;
-  code: string;
-  discount: number;
-  description: string;
-  expiryDate: string;
-  minimumPurchase?: number;
-}
+import QRCodeGenerator from 'qrcode';
+import copy from 'clipboard-copy';
+import { format } from "date-fns";
+import { Destination, Ticket, Profile, Promotion, Review, Notification } from "@/types/app";
 
 const Index = () => {
   const { toast } = useToast();
@@ -170,7 +71,7 @@ const Index = () => {
   });
 
   // Initialize notifications
-  const [notifications, setNotifications] = useState<{id: string, title: string, message: string, isRead: boolean, date: string}[]>([
+  const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: "1",
       title: "Your trip is tomorrow!",
@@ -820,48 +721,20 @@ const Index = () => {
   // Then show the auth page after completing the tutorial
   if (showAuth) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md p-6 space-y-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold text-secondary">Welcome to MARKY TICKETS</h1>
-            <p className="text-gray-600">Your Béjaïa travel companion</p>
-          </div>
-          
-          <div className="space-y-4">
-            <Button 
-              className="w-full" 
-              onClick={handleSignIn}
-              variant="outline"
-            >
-              <LogIn className="mr-2 h-4 w-4" />
-              Sign In
-            </Button>
-            
-            <Button 
-              className="w-full"
-              onClick={handleSignUp}
-            >
-              <UserPlus className="mr-2 h-4 w-4" />
-              Sign Up
-            </Button>
-            
-            <Button 
-              className="w-full"
-              variant="ghost"
-              onClick={handleSkip}
-            >
-              <ArrowRight className="mr-2 h-4 w-4" />
-              Continue as Guest
-            </Button>
-          </div>
-          
-          <p className="text-xs text-center text-gray-500">
-            By continuing, you agree to our Terms of Service and Privacy Policy
-          </p>
-        </Card>
-      </div>
+      <AuthScreen 
+        onSignIn={handleSignIn} 
+        onSignUp={handleSignUp} 
+        onSkip={handleSkip} 
+      />
     );
   }
+
+  // Set up route map props
+  const routeMapProps = {
+    from: from || "",
+    to: to || "",
+    intermediateStops: intermediateStops
+  };
 
   // Finally show the main app after authentication
   return (
@@ -872,96 +745,13 @@ const Index = () => {
             <h1 className="text-2xl sm:text-3xl font-bold text-secondary">
               MARKY TICKETS
             </h1>
-            <div className="flex items-center gap-2">
-              <Sheet open={profileOpen} onOpenChange={setProfileOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
-                    <Avatar>
-                      <AvatarImage src={userProfile.avatar} />
-                      <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="overflow-y-auto">
-                  <SheetHeader>
-                    <SheetTitle>User Profile</SheetTitle>
-                  </SheetHeader>
-                  <div className="py-4 space-y-6">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-16 w-16">
-                        <AvatarImage src={userProfile.avatar} />
-                        <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h3 className="font-semibold text-lg">{userProfile.name}</h3>
-                        <p className="text-gray-500 text-sm">{userProfile.email}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="border-t pt-4">
-                      <div className="flex justify-between mb-2">
-                        <h4 className="font-medium">Reward Points</h4>
-                        <Badge variant="outline" className="font-semibold">{userProfile.points} points</Badge>
-                      </div>
-                      <p className="text-sm text-gray-500">Earn points for each booking and review</p>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <h4 className="font-medium">Account Settings</h4>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="user-name">Full Name</Label>
-                        <Input 
-                          id="user-name" 
-                          value={userProfile.name} 
-                          onChange={(e) => setUserProfile({...userProfile, name: e.target.value})} 
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="user-email">Email Address</Label>
-                        <Input 
-                          id="user-email" 
-                          value={userProfile.email} 
-                          onChange={(e) => setUserProfile({...userProfile, email: e.target.value})}
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="user-phone">Phone Number</Label>
-                        <Input 
-                          id="user-phone" 
-                          value={userProfile.phone || ''} 
-                          onChange={(e) => setUserProfile({...userProfile, phone: e.target.value})}
-                          placeholder="+213 555 000000"
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label htmlFor="notifications">Notifications</Label>
-                          <p className="text-sm text-gray-500">Receive trip alerts and promotions</p>
-                        </div>
-                        <Switch 
-                          id="notifications" 
-                          checked={userProfile.notifications} 
-                          onCheckedChange={(checked) => setUserProfile({...userProfile, notifications: checked})}
-                        />
-                      </div>
-                    </div>
-                    
-                    <Button 
-                      onClick={handleSignOut} 
-                      variant="outline" 
-                      className="w-full"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Sign Out
-                    </Button>
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
+            <UserProfileSheet 
+              profile={userProfile}
+              open={profileOpen}
+              setOpen={setProfileOpen}
+              onProfileUpdate={setUserProfile}
+              onSignOut={handleSignOut}
+            />
           </div>
         </header>
         
@@ -978,4 +768,197 @@ const Index = () => {
                 Featured Destinations
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {featuredDestinations.map((destination
+                {featuredDestinations.map((destination) => (
+                  <DestinationCard
+                    key={destination.id}
+                    destination={destination}
+                    isFavorite={userProfile.favorites.includes(destination.location)}
+                    onSelect={handleDestinationSelect}
+                    onToggleFavorite={toggleFavorite}
+                    onReviewClick={(dest) => {
+                      setReviewDestination(dest);
+                      setShowRatingModal(true);
+                    }}
+                  />
+                ))}
+              </div>
+            </section>
+            
+            {/* Booking Form */}
+            {showRouteMap && !showReservationDetails && (
+              <section className="mb-6">
+                <h2 className="text-xl font-semibold mb-3 text-secondary">
+                  Book Your Trip
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card className="p-4">
+                    <BookingForm
+                      from={from}
+                      to={to}
+                      date={date}
+                      ticketPrice={ticketPrice}
+                      discountedPrice={discountedPrice}
+                      selectedTime={selectedTime}
+                      availableTimes={availableTimes}
+                      appliedPromo={appliedPromo}
+                      multiCityTrip={multiCityTrip}
+                      intermediateStops={intermediateStops}
+                      promoCode={promoCode}
+                      routeMapProps={routeMapProps}
+                      promotions={promotions}
+                      onFromChange={setFrom}
+                      onToChange={setTo}
+                      onDateSelect={handleDateSelect}
+                      onTimeSelect={handleTimeSelect}
+                      onPromoCodeChange={setPromoCode}
+                      onApplyPromoCode={applyPromoCode}
+                      onRemovePromoCode={removePromoCode}
+                      onMultiCityToggle={setMultiCityTrip}
+                      onAddIntermediateStop={handleAddIntermediateStop}
+                      onRemoveIntermediateStop={handleRemoveIntermediateStop}
+                      onReservation={handleReservation}
+                      onResetReservation={resetReservation}
+                    />
+                  </Card>
+                  
+                  <Card className="p-4">
+                    <h3 className="text-lg font-medium mb-3">Route Map</h3>
+                    <div className="h-80 border rounded">
+                      <RouteMap {...routeMapProps} />
+                    </div>
+                    <div className="mt-4">
+                      <h4 className="font-medium mb-2">Route Information</h4>
+                      <ul className="list-disc pl-5 space-y-1 text-sm text-gray-600">
+                        {tripStops.map((stop, index) => (
+                          <li key={index}>{stop}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </Card>
+                </div>
+              </section>
+            )}
+            
+            {/* Reservation Details */}
+            {showReservationDetails && (
+              <section>
+                <h2 className="text-xl font-semibold mb-3 text-secondary">
+                  Reservation Complete
+                </h2>
+                <div className="max-w-md mx-auto">
+                  <TicketDetails
+                    ticket={{
+                      id: ticketId,
+                      from: from || "",
+                      to: to || "",
+                      date: date ? format(date, 'yyyy-MM-dd') : "",
+                      time: selectedTime || "",
+                      price: discountedPrice,
+                      status: "unused",
+                      qrCode: qrCodeData,
+                      issued: new Date().toISOString(),
+                      stops: intermediateStops.length > 0 ? intermediateStops : undefined
+                    }}
+                    onShare={handleShareTicket}
+                  />
+                  <div className="mt-4 flex justify-center">
+                    <Button onClick={resetReservation}>
+                      Book Another Trip
+                    </Button>
+                  </div>
+                </section>
+              </section>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="my-tickets">
+            <section>
+              <h2 className="text-xl font-semibold mb-3 text-secondary">
+                My Recent Tickets
+              </h2>
+              {recentTickets.length > 0 ? (
+                <div className="space-y-4">
+                  {recentTickets.map((ticket) => (
+                    <Card key={ticket.id} className="overflow-hidden">
+                      <div className="p-4 flex justify-between items-center">
+                        <div>
+                          <h3 className="font-semibold">{ticket.from} → {ticket.to}</h3>
+                          <p className="text-sm text-gray-600">
+                            {ticket.date} at {ticket.time}
+                          </p>
+                        </div>
+                        <Button variant="outline" onClick={() => viewTicket(ticket)}>
+                          View Details
+                        </Button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-10">
+                  <p className="text-gray-500">You don't have any tickets yet</p>
+                  <Button className="mt-4" onClick={() => setActiveTab("explore")}>
+                    Book a trip
+                  </Button>
+                </div>
+              )}
+            </section>
+          </TabsContent>
+          
+          <TabsContent value="promotions">
+            <section>
+              <h2 className="text-xl font-semibold mb-3 text-secondary">
+                Available Promotions
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {promotions.map((promotion) => (
+                  <PromotionCard
+                    key={promotion.id}
+                    promotion={promotion}
+                    onApplyCode={(code) => {
+                      setPromoCode(code);
+                      setActiveTab("explore");
+                      toast({
+                        description: "Promo code added. Apply it during booking.",
+                        duration: 3000,
+                      });
+                    }}
+                  />
+                ))}
+              </div>
+            </section>
+          </TabsContent>
+        </Tabs>
+      </main>
+      
+      <BottomNav />
+      
+      {/* Review Modal */}
+      <ReviewDialog 
+        destination={reviewDestination}
+        open={showRatingModal}
+        setOpen={setShowRatingModal}
+        onSubmitReview={submitReview}
+        reviewText={reviewText}
+        setReviewText={setReviewText}
+        currentRating={currentRating}
+        setCurrentRating={setCurrentRating}
+      />
+      
+      {/* Ticket Details Dialog */}
+      <Dialog open={showTicketDetailsDialog} onOpenChange={setShowTicketDetailsDialog}>
+        <DialogContent className="max-w-md">
+          <DialogTitle>Ticket Details</DialogTitle>
+          {selectedTicket && (
+            <TicketDetails
+              ticket={selectedTicket}
+              onShare={handleShareTicket}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default Index;
