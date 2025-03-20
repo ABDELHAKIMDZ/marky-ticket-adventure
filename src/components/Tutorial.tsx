@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const tutorialSteps = [
   {
-    title: "Welcome to Marky Ticket",
+    title: "Welcome to MARKY TICKETS",
     description: "Your journey begins here. Book bus tickets with ease.",
     image: "https://images.unsplash.com/photo-1518770660439-4636190af475",
   },
