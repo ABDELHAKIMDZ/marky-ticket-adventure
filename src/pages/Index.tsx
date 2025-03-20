@@ -919,4 +919,63 @@ const Index = () => {
                       </div>
                       
                       <div className="space-y-2">
-                        
+                        <Label htmlFor="user-email">Email Address</Label>
+                        <Input 
+                          id="user-email" 
+                          value={userProfile.email} 
+                          onChange={(e) => setUserProfile({...userProfile, email: e.target.value})}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="user-phone">Phone Number</Label>
+                        <Input 
+                          id="user-phone" 
+                          value={userProfile.phone || ''} 
+                          onChange={(e) => setUserProfile({...userProfile, phone: e.target.value})}
+                          placeholder="+213 555 000000"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label htmlFor="notifications">Notifications</Label>
+                          <p className="text-sm text-gray-500">Receive trip alerts and promotions</p>
+                        </div>
+                        <Switch 
+                          id="notifications" 
+                          checked={userProfile.notifications} 
+                          onCheckedChange={(checked) => setUserProfile({...userProfile, notifications: checked})}
+                        />
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      onClick={handleSignOut} 
+                      variant="outline" 
+                      className="w-full"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign Out
+                    </Button>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </div>
+        </header>
+        
+        <Tabs defaultValue="explore" className="w-full">
+          <TabsList>
+            <TabsTrigger value="explore" onClick={() => setActiveTab("explore")}>Explore</TabsTrigger>
+            <TabsTrigger value="my-tickets" onClick={() => setActiveTab("my-tickets")}>My Tickets</TabsTrigger>
+            <TabsTrigger value="promotions" onClick={() => setActiveTab("promotions")}>Promotions</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="explore">
+            <section className="mb-6">
+              <h2 className="text-xl font-semibold mb-3 text-secondary">
+                Featured Destinations
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {featuredDestinations.map((destination) => (
