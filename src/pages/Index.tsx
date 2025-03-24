@@ -4,6 +4,7 @@ import { Tutorial } from "@/components/Tutorial";
 import { BottomNav } from "@/components/BottomNav";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { 
   Tabs, 
   TabsContent, 
@@ -866,7 +867,7 @@ const Index = () => {
                       Book Another Trip
                     </Button>
                   </div>
-                </section>
+                </div>
               </section>
             )}
           </TabsContent>
