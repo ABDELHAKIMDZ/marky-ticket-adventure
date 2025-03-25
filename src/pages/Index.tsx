@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Tutorial } from "@/components/Tutorial";
+import { AuthScreen } from "@/components/auth/AuthScreen";
 import { BottomNav } from "@/components/BottomNav";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
@@ -15,7 +16,6 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { AuthScreen } from "@/components/auth/AuthScreen";
 import { DestinationCard } from "@/components/destinations/DestinationCard";
 import { BookingDialog } from "@/components/bookings/BookingDialog";
 import { TicketDetails } from "@/components/tickets/TicketDetails";
@@ -30,6 +30,7 @@ import { Destination, Ticket, Profile, Promotion, Review, Notification } from "@
 
 const Index = () => {
   const { toast } = useToast();
+  
   const [showTutorial, setShowTutorial] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [userCredit, setUserCredit] = useState(1000);
@@ -60,12 +61,15 @@ const Index = () => {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showTicketDetailsDialog, setShowTicketDetailsDialog] = useState(false);
   
-  const [userProfile, setUserProfile] = useState<Profile>({
-    name: "Guest User",
-    email: "guest@example.com",
+  const [userProfile, setUserProfile] = useState({
+    name: "Sarah Ahmed",
+    email: "sarah.ahmed@example.com",
+    avatar: "https://i.pravatar.cc/150?u=sarah",
+    phone: "+213 555 123456",
+    preferredPayment: "Credit Card",
     notifications: true,
-    favorites: [],
-    points: 250
+    favorites: ["Tichy", "Gouraya"],
+    points: 450
   });
 
   const [notifications, setNotifications] = useState<Notification[]>([
@@ -178,7 +182,6 @@ const Index = () => {
   };
 
   const handleSignOut = () => {
-    setShowAuth(true);
     setUserProfile({
       name: "Guest User",
       email: "guest@example.com",
