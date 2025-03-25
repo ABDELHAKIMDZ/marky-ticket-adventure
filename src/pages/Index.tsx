@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Tutorial } from "@/components/Tutorial";
 import { BottomNav } from "@/components/BottomNav";
@@ -32,7 +31,7 @@ import { Destination, Ticket, Profile, Promotion, Review, Notification } from "@
 
 const Index = () => {
   const { toast } = useToast();
-  const [showTutorial, setShowTutorial] = useState(true);
+  const [showTutorial, setShowTutorial] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [userCredit, setUserCredit] = useState(1000); // Example: 1000 DA initial credit
   const [from, setFrom] = useState<string>();
@@ -62,7 +61,6 @@ const Index = () => {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showTicketDetailsDialog, setShowTicketDetailsDialog] = useState(false);
   
-  // User profile state
   const [userProfile, setUserProfile] = useState<Profile>({
     name: "Guest User",
     email: "guest@example.com",
@@ -71,7 +69,6 @@ const Index = () => {
     points: 250
   });
 
-  // Initialize notifications
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: "1",
@@ -89,7 +86,6 @@ const Index = () => {
     }
   ]);
 
-  // Available promotions
   const [promotions, setPromotions] = useState<Promotion[]>([
     {
       id: "1",
@@ -115,14 +111,29 @@ const Index = () => {
     }
   ]);
 
-  // Handle tutorial completion - now shows auth page
+  useEffect(() => {
+    const tutorialSeen = localStorage.getItem("tutorialSeen");
+    const authSeen = localStorage.getItem("authSeen");
+    
+    if (tutorialSeen) {
+      setShowTutorial(false);
+      if (!authSeen) {
+        setShowAuth(true);
+      }
+    } else {
+      setShowTutorial(true);
+    }
+  }, []);
+
   const handleTutorialComplete = () => {
     setShowTutorial(false);
+    localStorage.setItem("tutorialSeen", "true");
     setShowAuth(true);
   };
 
   const handleSkip = () => {
     setShowAuth(false);
+    localStorage.setItem("authSeen", "true");
     toast({
       description: "You can sign up later from the settings menu",
       duration: 3000,
@@ -131,6 +142,7 @@ const Index = () => {
 
   const handleSignIn = () => {
     setShowAuth(false);
+    localStorage.setItem("authSeen", "true");
     setUserProfile({
       ...userProfile,
       name: "Sarah Ahmed",
@@ -151,13 +163,13 @@ const Index = () => {
 
   const handleSignUp = () => {
     setShowAuth(false);
+    localStorage.setItem("authSeen", "true");
     
     toast({
       description: "Account created successfully",
       duration: 2000,
     });
     
-    // Set a basic user profile for demo
     setUserProfile({
       ...userProfile,
       name: "New User",
@@ -187,7 +199,6 @@ const Index = () => {
     setTo(destination);
     setShowRouteMap(true);
     
-    // Generate price based on destination (example)
     const prices: {[key: string]: number} = {
       "Tichy": 150,
       "Aokas": 180,
@@ -200,10 +211,8 @@ const Index = () => {
     setTicketPrice(price);
     setDiscountedPrice(price);
     
-    // Generate some stops for this route
     generateStops(from || "Béjaïa Center", destination);
     
-    // Reset other fields
     setDate(undefined);
     setSelectedTime(undefined);
     setAvailableTimes([]);
@@ -220,7 +229,6 @@ const Index = () => {
   };
 
   const generateStops = (start: string, end: string) => {
-    // Example stops for different routes
     const routeStops: {[key: string]: string[]} = {
       "Tichy": ["Béjaïa University", "Ihaddaden", "Tichy Beach"],
       "Aokas": ["Béjaïa Port", "Soummam Valley", "Aokas Center"],
@@ -285,7 +293,6 @@ const Index = () => {
       return;
     }
     
-    // Check if promo has expired
     if (new Date(promo.expiryDate) < new Date()) {
       toast({
         title: "Expired Code",
@@ -295,7 +302,6 @@ const Index = () => {
       return;
     }
     
-    // Check minimum purchase requirement if exists
     if (promo.minimumPurchase && ticketPrice < promo.minimumPurchase) {
       toast({
         title: "Minimum Purchase Required",
@@ -305,7 +311,6 @@ const Index = () => {
       return;
     }
     
-    // Apply discount
     const discount = (ticketPrice * promo.discount) / 100;
     setDiscountedPrice(ticketPrice - discount);
     setAppliedPromo(promo);
@@ -338,9 +343,8 @@ const Index = () => {
     }
     
     setIntermediateStops([...intermediateStops, stop]);
-    // Increase price for multi-city
     setTicketPrice(prevPrice => {
-      const newPrice = prevPrice + 50; // Add 50 DA for each additional stop
+      const newPrice = prevPrice + 50;
       setDiscountedPrice(appliedPromo ? 
         newPrice - (newPrice * appliedPromo.discount / 100) : 
         newPrice
@@ -356,9 +360,8 @@ const Index = () => {
 
   const handleRemoveIntermediateStop = (stop: string) => {
     setIntermediateStops(intermediateStops.filter(s => s !== stop));
-    // Decrease price
     setTicketPrice(prevPrice => {
-      const newPrice = prevPrice - 50; // Remove 50 DA for each removed stop
+      const newPrice = prevPrice - 50;
       setDiscountedPrice(appliedPromo ? 
         newPrice - (newPrice * appliedPromo.discount / 100) : 
         newPrice
@@ -374,11 +377,9 @@ const Index = () => {
 
   const handleShareTicket = async (ticket: Ticket) => {
     try {
-      // In a real app, this would generate a shareable link
       const shareUrl = `https://marky-ticket.app/tickets/${ticket.id}`;
       setShareTicketUrl(shareUrl);
       
-      // Copy to clipboard
       await copy(shareUrl);
       
       toast({
@@ -422,11 +423,9 @@ const Index = () => {
       return;
     }
 
-    // Generate ticket ID
     const newTicketId = Math.random().toString(36).substring(2, 10).toUpperCase();
     setTicketId(newTicketId);
 
-    // Create ticket data for QR code
     const ticketData = {
       id: newTicketId,
       from,
@@ -439,12 +438,10 @@ const Index = () => {
     };
 
     try {
-      // Generate QR code
       const qrCode = await QRCodeGenerator.toDataURL(JSON.stringify(ticketData));
       setQrCodeData(qrCode);
       setShowReservationDetails(true);
 
-      // Add this ticket to history
       const newTicket: Ticket = {
         id: newTicketId,
         from,
@@ -460,13 +457,11 @@ const Index = () => {
       
       setRecentTickets([newTicket, ...recentTickets]);
       
-      // Add points for the purchase
       setUserProfile({
         ...userProfile,
-        points: userProfile.points + Math.floor(discountedPrice / 10) // 1 point for every 10 DA
+        points: userProfile.points + Math.floor(discountedPrice / 10)
       });
       
-      // Deduct from credit
       setUserCredit(prev => prev - discountedPrice);
 
       toast({
@@ -474,7 +469,6 @@ const Index = () => {
         description: "Your ticket has been reserved",
       });
       
-      // Add a notification for the upcoming trip
       const newNotification = {
         id: Date.now().toString(),
         title: "Trip Booked Successfully!",
@@ -518,7 +512,6 @@ const Index = () => {
       return;
     }
     
-    // Create new review
     const newReview: Review = {
       id: Date.now().toString(),
       author: userProfile.name,
@@ -528,7 +521,6 @@ const Index = () => {
       date: "Just now"
     };
     
-    // Add to destination reviews
     const updatedDestinations = featuredDestinations.map(dest => 
       dest.id === reviewDestination.id 
         ? { ...dest, reviews: [newReview, ...dest.reviews] }
@@ -545,10 +537,9 @@ const Index = () => {
       description: "Your review has been submitted",
     });
     
-    // Add some bonus points for the review
     setUserProfile({
       ...userProfile,
-      points: userProfile.points + 25 // 25 points for a review
+      points: userProfile.points + 25
     });
   };
 
@@ -714,12 +705,10 @@ const Index = () => {
     }
   ]);
 
-  // First show the tutorial/welcome page
   if (showTutorial) {
     return <Tutorial onComplete={handleTutorialComplete} />;
   }
 
-  // Then show the auth page after completing the tutorial
   if (showAuth) {
     return (
       <AuthScreen 
@@ -730,14 +719,12 @@ const Index = () => {
     );
   }
 
-  // Set up route map props
   const routeMapProps = {
     from: from || "",
     to: to || "",
     intermediateStops: intermediateStops
   };
 
-  // Finally show the main app after authentication
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <main className="container mx-auto px-4 py-6 animate-fade-in">
@@ -785,7 +772,6 @@ const Index = () => {
               </div>
             </section>
             
-            {/* Booking Form */}
             {showRouteMap && !showReservationDetails && (
               <section className="mb-6">
                 <h2 className="text-xl font-semibold mb-3 text-secondary">
@@ -840,7 +826,6 @@ const Index = () => {
               </section>
             )}
             
-            {/* Reservation Details */}
             {showReservationDetails && (
               <section>
                 <h2 className="text-xl font-semibold mb-3 text-secondary">
@@ -934,7 +919,6 @@ const Index = () => {
       
       <BottomNav />
       
-      {/* Review Modal */}
       <ReviewDialog 
         destination={reviewDestination}
         open={showRatingModal}
@@ -946,7 +930,6 @@ const Index = () => {
         setCurrentRating={setCurrentRating}
       />
       
-      {/* Ticket Details Dialog */}
       <Dialog open={showTicketDetailsDialog} onOpenChange={setShowTicketDetailsDialog}>
         <DialogContent className="max-w-md">
           <DialogTitle>Ticket Details</DialogTitle>
