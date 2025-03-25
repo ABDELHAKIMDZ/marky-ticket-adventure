@@ -10,17 +10,24 @@ import TicketHistory from "./pages/TicketHistory";
 import Notifications from "./pages/Notifications";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
+// Create a client outside of the component to avoid recreating it on each render
 const queryClient = new QueryClient();
 
 const App = () => {
+  // Use useState to track dark mode
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  
   useEffect(() => {
     // Check for dark mode preference
     const savedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     
-    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+    const shouldUseDarkMode = savedTheme === "dark" || (!savedTheme && prefersDark);
+    setIsDarkMode(shouldUseDarkMode);
+    
+    if (shouldUseDarkMode) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
