@@ -1,10 +1,11 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/components/BottomNav";
 import { Bell, Tag, Ticket, AlertCircle, Check } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { Link } from "react-router-dom";
+import { Home } from "lucide-react";
 
 interface Notification {
   id: string;
@@ -78,8 +79,13 @@ const Notifications = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <main className="container mx-auto px-4 py-6">
-        <header className="mb-6">
-          <div className="flex justify-between items-center">
+        <header className="mb-6 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <Link to="/">
+              <Button variant="outline" size="icon">
+                <Home className="h-5 w-5" />
+              </Button>
+            </Link>
             <h1 className="text-2xl font-bold text-secondary flex items-center gap-2">
               <Bell className="text-primary" />
               Notifications
@@ -89,17 +95,17 @@ const Notifications = () => {
                 </span>
               )}
             </h1>
-            {notifications.length > 0 && (
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={clearAll}
-                className="text-gray-600"
-              >
-                Clear All
-              </Button>
-            )}
           </div>
+          {notifications.length > 0 && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={clearAll}
+              className="text-gray-600"
+            >
+              Clear All
+            </Button>
+          )}
         </header>
 
         <div className="space-y-4">
