@@ -17,12 +17,11 @@ import {
 } from "@/components/ui/dialog";
 import { AuthScreen } from "@/components/auth/AuthScreen";
 import { DestinationCard } from "@/components/destinations/DestinationCard";
-import { BookingForm } from "@/components/bookings/BookingForm";
+import { BookingDialog } from "@/components/bookings/BookingDialog";
 import { TicketDetails } from "@/components/tickets/TicketDetails";
 import { UserProfileSheet } from "@/components/profile/UserProfileSheet";
 import { ReviewDialog } from "@/components/reviews/ReviewDialog";
 import { PromotionCard } from "@/components/promotions/PromotionCard";
-import { RouteMap } from "@/components/RouteMap";
 
 import QRCodeGenerator from 'qrcode';
 import copy from 'clipboard-copy';
@@ -33,13 +32,13 @@ const Index = () => {
   const { toast } = useToast();
   const [showTutorial, setShowTutorial] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
-  const [userCredit, setUserCredit] = useState(1000); // Example: 1000 DA initial credit
+  const [userCredit, setUserCredit] = useState(1000);
   const [from, setFrom] = useState<string>();
   const [to, setTo] = useState<string>();
   const [date, setDate] = useState<Date>();
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [selectedTime, setSelectedTime] = useState<string>();
-  const [showRouteMap, setShowRouteMap] = useState(false);
+  const [showBookingDialog, setShowBookingDialog] = useState(false);
   const [showReservationDetails, setShowReservationDetails] = useState(false);
   const [ticketPrice, setTicketPrice] = useState(0);
   const [discountedPrice, setDiscountedPrice] = useState(0);
@@ -197,7 +196,7 @@ const Index = () => {
   const handleDestinationSelect = (destination: string) => {
     setFrom("Béjaïa Center");
     setTo(destination);
-    setShowRouteMap(true);
+    setShowBookingDialog(true);
     
     const prices: {[key: string]: number} = {
       "Tichy": 150,
@@ -441,6 +440,7 @@ const Index = () => {
       const qrCode = await QRCodeGenerator.toDataURL(JSON.stringify(ticketData));
       setQrCodeData(qrCode);
       setShowReservationDetails(true);
+      setShowBookingDialog(false);
 
       const newTicket: Ticket = {
         id: newTicketId,
@@ -492,7 +492,7 @@ const Index = () => {
     setTo(undefined);
     setDate(undefined);
     setSelectedTime(undefined);
-    setShowRouteMap(false);
+    setShowBookingDialog(false);
     setShowReservationDetails(false);
     setAppliedPromo(null);
     setPromoCode("");
@@ -772,60 +772,6 @@ const Index = () => {
               </div>
             </section>
             
-            {showRouteMap && !showReservationDetails && (
-              <section className="mb-6">
-                <h2 className="text-xl font-semibold mb-3 text-secondary">
-                  Book Your Trip
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card className="p-4">
-                    <BookingForm
-                      from={from}
-                      to={to}
-                      date={date}
-                      ticketPrice={ticketPrice}
-                      discountedPrice={discountedPrice}
-                      selectedTime={selectedTime}
-                      availableTimes={availableTimes}
-                      appliedPromo={appliedPromo}
-                      multiCityTrip={multiCityTrip}
-                      intermediateStops={intermediateStops}
-                      promoCode={promoCode}
-                      routeMapProps={routeMapProps}
-                      promotions={promotions}
-                      onFromChange={setFrom}
-                      onToChange={setTo}
-                      onDateSelect={handleDateSelect}
-                      onTimeSelect={handleTimeSelect}
-                      onPromoCodeChange={setPromoCode}
-                      onApplyPromoCode={applyPromoCode}
-                      onRemovePromoCode={removePromoCode}
-                      onMultiCityToggle={setMultiCityTrip}
-                      onAddIntermediateStop={handleAddIntermediateStop}
-                      onRemoveIntermediateStop={handleRemoveIntermediateStop}
-                      onReservation={handleReservation}
-                      onResetReservation={resetReservation}
-                    />
-                  </Card>
-                  
-                  <Card className="p-4">
-                    <h3 className="text-lg font-medium mb-3">Route Map</h3>
-                    <div className="h-80 border rounded">
-                      <RouteMap {...routeMapProps} />
-                    </div>
-                    <div className="mt-4">
-                      <h4 className="font-medium mb-2">Route Information</h4>
-                      <ul className="list-disc pl-5 space-y-1 text-sm text-gray-600">
-                        {tripStops.map((stop, index) => (
-                          <li key={index}>{stop}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </Card>
-                </div>
-              </section>
-            )}
-            
             {showReservationDetails && (
               <section>
                 <h2 className="text-xl font-semibold mb-3 text-secondary">
@@ -940,6 +886,39 @@ const Index = () => {
             />
           )}
         </DialogContent>
+      </Dialog>
+
+      <Dialog open={showBookingDialog} onOpenChange={setShowBookingDialog}>
+        {from && to && (
+          <BookingDialog
+            from={from}
+            to={to}
+            date={date}
+            ticketPrice={ticketPrice}
+            discountedPrice={discountedPrice}
+            selectedTime={selectedTime}
+            availableTimes={availableTimes}
+            appliedPromo={appliedPromo}
+            multiCityTrip={multiCityTrip}
+            intermediateStops={intermediateStops}
+            promoCode={promoCode}
+            tripStops={tripStops}
+            routeMapProps={routeMapProps}
+            promotions={promotions}
+            onFromChange={setFrom}
+            onToChange={setTo}
+            onDateSelect={handleDateSelect}
+            onTimeSelect={handleTimeSelect}
+            onPromoCodeChange={setPromoCode}
+            onApplyPromoCode={applyPromoCode}
+            onRemovePromoCode={removePromoCode}
+            onMultiCityToggle={setMultiCityTrip}
+            onAddIntermediateStop={handleAddIntermediateStop}
+            onRemoveIntermediateStop={handleRemoveIntermediateStop}
+            onReservation={handleReservation}
+            onCancel={resetReservation}
+          />
+        )}
       </Dialog>
     </div>
   );
