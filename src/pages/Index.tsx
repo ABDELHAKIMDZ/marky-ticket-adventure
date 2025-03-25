@@ -1,6 +1,6 @@
+
 import { useState, useEffect } from "react";
 import { Tutorial } from "@/components/Tutorial";
-import { AuthScreen } from "@/components/auth/AuthScreen";
 import { BottomNav } from "@/components/BottomNav";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
@@ -16,12 +16,14 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { AuthScreen } from "@/components/auth/AuthScreen";
 import { DestinationCard } from "@/components/destinations/DestinationCard";
-import { BookingDialog } from "@/components/bookings/BookingDialog";
+import { BookingForm } from "@/components/bookings/BookingForm";
 import { TicketDetails } from "@/components/tickets/TicketDetails";
 import { UserProfileSheet } from "@/components/profile/UserProfileSheet";
 import { ReviewDialog } from "@/components/reviews/ReviewDialog";
 import { PromotionCard } from "@/components/promotions/PromotionCard";
+import { RouteMap } from "@/components/RouteMap";
 
 import QRCodeGenerator from 'qrcode';
 import copy from 'clipboard-copy';
@@ -30,16 +32,15 @@ import { Destination, Ticket, Profile, Promotion, Review, Notification } from "@
 
 const Index = () => {
   const { toast } = useToast();
-  
-  const [showTutorial, setShowTutorial] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
-  const [userCredit, setUserCredit] = useState(1000);
+  const [userCredit, setUserCredit] = useState(1000); // Example: 1000 DA initial credit
   const [from, setFrom] = useState<string>();
   const [to, setTo] = useState<string>();
   const [date, setDate] = useState<Date>();
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [selectedTime, setSelectedTime] = useState<string>();
-  const [showBookingDialog, setShowBookingDialog] = useState(false);
+  const [showRouteMap, setShowRouteMap] = useState(false);
   const [showReservationDetails, setShowReservationDetails] = useState(false);
   const [ticketPrice, setTicketPrice] = useState(0);
   const [discountedPrice, setDiscountedPrice] = useState(0);
@@ -61,17 +62,16 @@ const Index = () => {
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showTicketDetailsDialog, setShowTicketDetailsDialog] = useState(false);
   
-  const [userProfile, setUserProfile] = useState({
-    name: "Sarah Ahmed",
-    email: "sarah.ahmed@example.com",
-    avatar: "https://i.pravatar.cc/150?u=sarah",
-    phone: "+213 555 123456",
-    preferredPayment: "Credit Card",
+  // User profile state
+  const [userProfile, setUserProfile] = useState<Profile>({
+    name: "Guest User",
+    email: "guest@example.com",
     notifications: true,
-    favorites: ["Tichy", "Gouraya"],
-    points: 450
+    favorites: [],
+    points: 250
   });
 
+  // Initialize notifications
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: "1",
@@ -89,6 +89,7 @@ const Index = () => {
     }
   ]);
 
+  // Available promotions
   const [promotions, setPromotions] = useState<Promotion[]>([
     {
       id: "1",
@@ -114,29 +115,14 @@ const Index = () => {
     }
   ]);
 
-  useEffect(() => {
-    const tutorialSeen = localStorage.getItem("tutorialSeen");
-    const authSeen = localStorage.getItem("authSeen");
-    
-    if (tutorialSeen) {
-      setShowTutorial(false);
-      if (!authSeen) {
-        setShowAuth(true);
-      }
-    } else {
-      setShowTutorial(true);
-    }
-  }, []);
-
+  // Handle tutorial completion - now shows auth page
   const handleTutorialComplete = () => {
     setShowTutorial(false);
-    localStorage.setItem("tutorialSeen", "true");
     setShowAuth(true);
   };
 
   const handleSkip = () => {
     setShowAuth(false);
-    localStorage.setItem("authSeen", "true");
     toast({
       description: "You can sign up later from the settings menu",
       duration: 3000,
@@ -145,7 +131,6 @@ const Index = () => {
 
   const handleSignIn = () => {
     setShowAuth(false);
-    localStorage.setItem("authSeen", "true");
     setUserProfile({
       ...userProfile,
       name: "Sarah Ahmed",
@@ -166,13 +151,13 @@ const Index = () => {
 
   const handleSignUp = () => {
     setShowAuth(false);
-    localStorage.setItem("authSeen", "true");
     
     toast({
       description: "Account created successfully",
       duration: 2000,
     });
     
+    // Set a basic user profile for demo
     setUserProfile({
       ...userProfile,
       name: "New User",
@@ -182,12 +167,10 @@ const Index = () => {
   };
 
   const handleSignOut = () => {
+    setShowAuth(true);
     setUserProfile({
       name: "Guest User",
       email: "guest@example.com",
-      avatar: "",
-      phone: "",
-      preferredPayment: "",
       notifications: true,
       favorites: [],
       points: 250
@@ -202,8 +185,9 @@ const Index = () => {
   const handleDestinationSelect = (destination: string) => {
     setFrom("Béjaïa Center");
     setTo(destination);
-    setShowBookingDialog(true);
+    setShowRouteMap(true);
     
+    // Generate price based on destination (example)
     const prices: {[key: string]: number} = {
       "Tichy": 150,
       "Aokas": 180,
@@ -216,8 +200,10 @@ const Index = () => {
     setTicketPrice(price);
     setDiscountedPrice(price);
     
+    // Generate some stops for this route
     generateStops(from || "Béjaïa Center", destination);
     
+    // Reset other fields
     setDate(undefined);
     setSelectedTime(undefined);
     setAvailableTimes([]);
@@ -234,6 +220,7 @@ const Index = () => {
   };
 
   const generateStops = (start: string, end: string) => {
+    // Example stops for different routes
     const routeStops: {[key: string]: string[]} = {
       "Tichy": ["Béjaïa University", "Ihaddaden", "Tichy Beach"],
       "Aokas": ["Béjaïa Port", "Soummam Valley", "Aokas Center"],
@@ -298,6 +285,7 @@ const Index = () => {
       return;
     }
     
+    // Check if promo has expired
     if (new Date(promo.expiryDate) < new Date()) {
       toast({
         title: "Expired Code",
@@ -307,6 +295,7 @@ const Index = () => {
       return;
     }
     
+    // Check minimum purchase requirement if exists
     if (promo.minimumPurchase && ticketPrice < promo.minimumPurchase) {
       toast({
         title: "Minimum Purchase Required",
@@ -316,6 +305,7 @@ const Index = () => {
       return;
     }
     
+    // Apply discount
     const discount = (ticketPrice * promo.discount) / 100;
     setDiscountedPrice(ticketPrice - discount);
     setAppliedPromo(promo);
@@ -348,8 +338,9 @@ const Index = () => {
     }
     
     setIntermediateStops([...intermediateStops, stop]);
+    // Increase price for multi-city
     setTicketPrice(prevPrice => {
-      const newPrice = prevPrice + 50;
+      const newPrice = prevPrice + 50; // Add 50 DA for each additional stop
       setDiscountedPrice(appliedPromo ? 
         newPrice - (newPrice * appliedPromo.discount / 100) : 
         newPrice
@@ -365,8 +356,9 @@ const Index = () => {
 
   const handleRemoveIntermediateStop = (stop: string) => {
     setIntermediateStops(intermediateStops.filter(s => s !== stop));
+    // Decrease price
     setTicketPrice(prevPrice => {
-      const newPrice = prevPrice - 50;
+      const newPrice = prevPrice - 50; // Remove 50 DA for each removed stop
       setDiscountedPrice(appliedPromo ? 
         newPrice - (newPrice * appliedPromo.discount / 100) : 
         newPrice
@@ -382,9 +374,11 @@ const Index = () => {
 
   const handleShareTicket = async (ticket: Ticket) => {
     try {
+      // In a real app, this would generate a shareable link
       const shareUrl = `https://marky-ticket.app/tickets/${ticket.id}`;
       setShareTicketUrl(shareUrl);
       
+      // Copy to clipboard
       await copy(shareUrl);
       
       toast({
@@ -428,9 +422,11 @@ const Index = () => {
       return;
     }
 
+    // Generate ticket ID
     const newTicketId = Math.random().toString(36).substring(2, 10).toUpperCase();
     setTicketId(newTicketId);
 
+    // Create ticket data for QR code
     const ticketData = {
       id: newTicketId,
       from,
@@ -443,11 +439,12 @@ const Index = () => {
     };
 
     try {
+      // Generate QR code
       const qrCode = await QRCodeGenerator.toDataURL(JSON.stringify(ticketData));
       setQrCodeData(qrCode);
       setShowReservationDetails(true);
-      setShowBookingDialog(false);
 
+      // Add this ticket to history
       const newTicket: Ticket = {
         id: newTicketId,
         from,
@@ -463,11 +460,13 @@ const Index = () => {
       
       setRecentTickets([newTicket, ...recentTickets]);
       
+      // Add points for the purchase
       setUserProfile({
         ...userProfile,
-        points: userProfile.points + Math.floor(discountedPrice / 10)
+        points: userProfile.points + Math.floor(discountedPrice / 10) // 1 point for every 10 DA
       });
       
+      // Deduct from credit
       setUserCredit(prev => prev - discountedPrice);
 
       toast({
@@ -475,6 +474,7 @@ const Index = () => {
         description: "Your ticket has been reserved",
       });
       
+      // Add a notification for the upcoming trip
       const newNotification = {
         id: Date.now().toString(),
         title: "Trip Booked Successfully!",
@@ -498,7 +498,7 @@ const Index = () => {
     setTo(undefined);
     setDate(undefined);
     setSelectedTime(undefined);
-    setShowBookingDialog(false);
+    setShowRouteMap(false);
     setShowReservationDetails(false);
     setAppliedPromo(null);
     setPromoCode("");
@@ -518,6 +518,7 @@ const Index = () => {
       return;
     }
     
+    // Create new review
     const newReview: Review = {
       id: Date.now().toString(),
       author: userProfile.name,
@@ -527,6 +528,7 @@ const Index = () => {
       date: "Just now"
     };
     
+    // Add to destination reviews
     const updatedDestinations = featuredDestinations.map(dest => 
       dest.id === reviewDestination.id 
         ? { ...dest, reviews: [newReview, ...dest.reviews] }
@@ -543,9 +545,10 @@ const Index = () => {
       description: "Your review has been submitted",
     });
     
+    // Add some bonus points for the review
     setUserProfile({
       ...userProfile,
-      points: userProfile.points + 25
+      points: userProfile.points + 25 // 25 points for a review
     });
   };
 
@@ -711,10 +714,12 @@ const Index = () => {
     }
   ]);
 
+  // First show the tutorial/welcome page
   if (showTutorial) {
     return <Tutorial onComplete={handleTutorialComplete} />;
   }
 
+  // Then show the auth page after completing the tutorial
   if (showAuth) {
     return (
       <AuthScreen 
@@ -725,12 +730,14 @@ const Index = () => {
     );
   }
 
+  // Set up route map props
   const routeMapProps = {
     from: from || "",
     to: to || "",
     intermediateStops: intermediateStops
   };
 
+  // Finally show the main app after authentication
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <main className="container mx-auto px-4 py-6 animate-fade-in">
@@ -778,6 +785,62 @@ const Index = () => {
               </div>
             </section>
             
+            {/* Booking Form */}
+            {showRouteMap && !showReservationDetails && (
+              <section className="mb-6">
+                <h2 className="text-xl font-semibold mb-3 text-secondary">
+                  Book Your Trip
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Card className="p-4">
+                    <BookingForm
+                      from={from}
+                      to={to}
+                      date={date}
+                      ticketPrice={ticketPrice}
+                      discountedPrice={discountedPrice}
+                      selectedTime={selectedTime}
+                      availableTimes={availableTimes}
+                      appliedPromo={appliedPromo}
+                      multiCityTrip={multiCityTrip}
+                      intermediateStops={intermediateStops}
+                      promoCode={promoCode}
+                      routeMapProps={routeMapProps}
+                      promotions={promotions}
+                      onFromChange={setFrom}
+                      onToChange={setTo}
+                      onDateSelect={handleDateSelect}
+                      onTimeSelect={handleTimeSelect}
+                      onPromoCodeChange={setPromoCode}
+                      onApplyPromoCode={applyPromoCode}
+                      onRemovePromoCode={removePromoCode}
+                      onMultiCityToggle={setMultiCityTrip}
+                      onAddIntermediateStop={handleAddIntermediateStop}
+                      onRemoveIntermediateStop={handleRemoveIntermediateStop}
+                      onReservation={handleReservation}
+                      onResetReservation={resetReservation}
+                    />
+                  </Card>
+                  
+                  <Card className="p-4">
+                    <h3 className="text-lg font-medium mb-3">Route Map</h3>
+                    <div className="h-80 border rounded">
+                      <RouteMap {...routeMapProps} />
+                    </div>
+                    <div className="mt-4">
+                      <h4 className="font-medium mb-2">Route Information</h4>
+                      <ul className="list-disc pl-5 space-y-1 text-sm text-gray-600">
+                        {tripStops.map((stop, index) => (
+                          <li key={index}>{stop}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </Card>
+                </div>
+              </section>
+            )}
+            
+            {/* Reservation Details */}
             {showReservationDetails && (
               <section>
                 <h2 className="text-xl font-semibold mb-3 text-secondary">
@@ -871,6 +934,7 @@ const Index = () => {
       
       <BottomNav />
       
+      {/* Review Modal */}
       <ReviewDialog 
         destination={reviewDestination}
         open={showRatingModal}
@@ -882,6 +946,7 @@ const Index = () => {
         setCurrentRating={setCurrentRating}
       />
       
+      {/* Ticket Details Dialog */}
       <Dialog open={showTicketDetailsDialog} onOpenChange={setShowTicketDetailsDialog}>
         <DialogContent className="max-w-md">
           <DialogTitle>Ticket Details</DialogTitle>
@@ -892,39 +957,6 @@ const Index = () => {
             />
           )}
         </DialogContent>
-      </Dialog>
-
-      <Dialog open={showBookingDialog} onOpenChange={setShowBookingDialog}>
-        {from && to && (
-          <BookingDialog
-            from={from}
-            to={to}
-            date={date}
-            ticketPrice={ticketPrice}
-            discountedPrice={discountedPrice}
-            selectedTime={selectedTime}
-            availableTimes={availableTimes}
-            appliedPromo={appliedPromo}
-            multiCityTrip={multiCityTrip}
-            intermediateStops={intermediateStops}
-            promoCode={promoCode}
-            tripStops={tripStops}
-            routeMapProps={routeMapProps}
-            promotions={promotions}
-            onFromChange={setFrom}
-            onToChange={setTo}
-            onDateSelect={handleDateSelect}
-            onTimeSelect={handleTimeSelect}
-            onPromoCodeChange={setPromoCode}
-            onApplyPromoCode={applyPromoCode}
-            onRemovePromoCode={removePromoCode}
-            onMultiCityToggle={setMultiCityTrip}
-            onAddIntermediateStop={handleAddIntermediateStop}
-            onRemoveIntermediateStop={handleRemoveIntermediateStop}
-            onReservation={handleReservation}
-            onCancel={resetReservation}
-          />
-        )}
       </Dialog>
     </div>
   );

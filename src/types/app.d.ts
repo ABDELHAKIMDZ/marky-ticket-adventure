@@ -39,9 +39,9 @@ export interface Ticket {
 export interface Profile {
   name: string;
   email: string;
-  avatar: string;
-  phone: string;
-  preferredPayment: string;
+  avatar?: string;
+  phone?: string;
+  preferredPayment?: string;
   notifications: boolean;
   favorites: string[];
   points: number;
