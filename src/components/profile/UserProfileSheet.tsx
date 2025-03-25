@@ -25,7 +25,7 @@ export const UserProfileSheet = ({
   onProfileUpdate, 
   onSignOut 
 }: UserProfileSheetProps) => {
-  const [localProfile, setLocalProfile] = useState(profile);
+  const [localProfile, setLocalProfile] = useState<Profile>(profile);
 
   const handleProfileChange = (field: keyof Profile, value: any) => {
     setLocalProfile({
@@ -99,7 +99,7 @@ export const UserProfileSheet = ({
               <Label htmlFor="user-phone">Phone Number</Label>
               <Input 
                 id="user-phone" 
-                value={localProfile.phone || ''} 
+                value={localProfile.phone} 
                 onChange={(e) => handleProfileChange('phone', e.target.value)}
                 placeholder="+213 555 000000"
               />

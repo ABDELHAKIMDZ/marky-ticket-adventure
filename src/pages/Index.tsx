@@ -185,6 +185,9 @@ const Index = () => {
     setUserProfile({
       name: "Guest User",
       email: "guest@example.com",
+      avatar: "",
+      phone: "",
+      preferredPayment: "",
       notifications: true,
       favorites: [],
       points: 250
