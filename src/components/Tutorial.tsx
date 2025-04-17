@@ -7,17 +7,17 @@ const tutorialSteps = [
   {
     title: "Welcome to MARKY TICKETS",
     description: "Discover the beauty of Bejaia, your next destination.",
-    image: "https://th.bing.com/th/id/OIP.4FK7WK9RynjOSr6o0nZSOgAAAA?w=119&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Bejaia_-_vue_g%C3%A9n%C3%A9rale.jpg/1280px-Bejaia_-_vue_g%C3%A9n%C3%A9rale.jpg",
   },
   {
     title: "Discover Places",
     description: "Explore the stunning landscapes of Bejaia.",
-    image: "https://th.bing.com/th/id/OIP.Hwngx_hopf26OfMin2EU2gHaLI?w=115&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Bejaia_port.jpg/1280px-Bejaia_port.jpg",
   },
   {
     title: "Easy Booking",
     description: "Book your tickets to Bejaia with just a few taps.",
-    image: "https://th.bing.com/th/id/OIP.4FK7WK9RynjOSr6o0nZSOgAAAA?w=119&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Bejaia_Corniche.jpg/1280px-Bejaia_Corniche.jpg",
   },
 ];
 
