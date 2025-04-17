@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -6,17 +7,17 @@ const tutorialSteps = [
   {
     title: "Welcome to MARKY TICKETS",
     description: "Discover the beauty of Bejaia, your next destination.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Urbino_bus.jpg/1280px-Urbino_bus.jpg",
+    image: "/placeholder.svg",
   },
   {
     title: "Discover Places",
     description: "Explore the stunning landscapes of Bejaia.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Puerto_de_Almeria_%28Spain%29.jpg/1280px-Puerto_de_Almeria_%28Spain%29.jpg",
+    image: "/placeholder.svg",
   },
   {
     title: "Easy Booking",
     description: "Book your tickets to Bejaia with just a few taps.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Example_image_of_ticket_to_Beth%27s_Farm_Market%2C_Maine.jpg/1280px-Example_image_of_ticket_to_Beth%27s_Farm_Market%2C_Maine.jpg",
+    image: "/placeholder.svg",
   },
 ];
 
