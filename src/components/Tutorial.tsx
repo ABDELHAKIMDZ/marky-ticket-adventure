@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,17 +6,17 @@ const tutorialSteps = [
   {
     title: "Welcome to MARKY TICKETS",
     description: "Discover the beauty of Bejaia, your next destination.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Bejaia_-_vue_g%C3%A9n%C3%A9rale.jpg/1280px-Bejaia_-_vue_g%C3%A9n%C3%A9rale.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Urbino_bus.jpg/1280px-Urbino_bus.jpg",
   },
   {
     title: "Discover Places",
     description: "Explore the stunning landscapes of Bejaia.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Bejaia_port.jpg/1280px-Bejaia_port.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Puerto_de_Almeria_%28Spain%29.jpg/1280px-Puerto_de_Almeria_%28Spain%29.jpg",
   },
   {
     title: "Easy Booking",
     description: "Book your tickets to Bejaia with just a few taps.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Bejaia_Corniche.jpg/1280px-Bejaia_Corniche.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Example_image_of_ticket_to_Beth%27s_Farm_Market%2C_Maine.jpg/1280px-Example_image_of_ticket_to_Beth%27s_Farm_Market%2C_Maine.jpg",
   },
 ];
 
