@@ -6,18 +6,18 @@ import { motion, AnimatePresence } from "framer-motion";
 const tutorialSteps = [
   {
     title: "Welcome to MARKY TICKETS",
-    description: "Your journey begins here. Book bus tickets with ease.",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475",
+    description: "Discover the beauty of Bejaia, your next destination.",
+    image: "https://th.bing.com/th/id/OIP.4FK7WK9RynjOSr6o0nZSOgAAAA?w=119&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7",
   },
   {
     title: "Discover Places",
-    description: "Explore amazing destinations and plan your next adventure.",
-    image: "https://images.unsplash.com/photo-1472396961693-142e6e269027",
+    description: "Explore the stunning landscapes of Bejaia.",
+    image: "https://th.bing.com/th/id/OIP.Hwngx_hopf26OfMin2EU2gHaLI?w=115&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7",
   },
   {
     title: "Easy Booking",
-    description: "Book your tickets in just a few taps.",
-    image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
+    description: "Book your tickets to Bejaia with just a few taps.",
+    image: "https://th.bing.com/th/id/OIP.4FK7WK9RynjOSr6o0nZSOgAAAA?w=119&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7",
   },
 ];
 
