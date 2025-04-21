@@ -9,7 +9,7 @@ import TicketHistory from "./pages/TicketHistory";
 import Notifications from "./pages/Notifications";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
-import BookingPage from "./pages/BookingPage";
+import BookingPage from "./pages/Booking";
 import { useState, useEffect } from "react";
 
 const queryClient = new QueryClient();
