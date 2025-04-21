@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Tutorial } from "@/components/Tutorial";
 import { BottomNav } from "@/components/BottomNav";
 import { useToast } from "@/components/ui/use-toast";
@@ -30,6 +31,7 @@ import { format } from "date-fns";
 import { Destination, Ticket, Profile, Promotion, Review, Notification } from "@/types/app";
 
 const Index = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [showTutorial, setShowTutorial] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
@@ -545,10 +547,7 @@ const Index = () => {
   };
 
   const handleBookNowClick = () => {
-    setFrom("Béjaïa Center");
-    setShowRouteMap(true);
-    setActiveTab("explore");
-    
+    navigate("/booking");
     toast({
       description: "Select your destination to continue booking",
     });

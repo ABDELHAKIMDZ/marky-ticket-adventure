@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,17 +9,15 @@ import TicketHistory from "./pages/TicketHistory";
 import Notifications from "./pages/Notifications";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import BookingPage from "./pages/BookingPage";
 import { useState, useEffect } from "react";
 
-// Create a client outside of the component to avoid recreating it on each render
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Use useState to track dark mode
   const [isDarkMode, setIsDarkMode] = useState(false);
   
   useEffect(() => {
-    // Check for dark mode preference
     const savedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     
@@ -43,6 +40,7 @@ const App = () => {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/booking" element={<BookingPage />} />
               <Route path="/tickets" element={<Tickets />} />
               <Route path="/tickets/history" element={<TicketHistory />} />
               <Route path="/notifications" element={<Notifications />} />
