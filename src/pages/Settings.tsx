@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,9 +28,9 @@ interface SettingItem {
 const Settings = () => {
   const { toast } = useToast();
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isPrivacyModeEnabled, setIsPrivacyModeEnabled] = useState(false);
   
   useEffect(() => {
-    // Check if user has previously set dark mode preference
     const savedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     
@@ -63,14 +62,24 @@ const Settings = () => {
   };
 
   const handleSignOut = () => {
-    // In a real app, this would clear auth tokens
     toast({
       title: "Signed Out",
       description: "You have been signed out successfully",
     });
     
-    // Redirect to the home page
     window.location.href = "/";
+  };
+
+  const togglePrivacyMode = () => {
+    const newPrivacyModeState = !isPrivacyModeEnabled;
+    setIsPrivacyModeEnabled(newPrivacyModeState);
+    
+    toast({
+      title: newPrivacyModeState ? "Privacy Mode Enabled" : "Privacy Mode Disabled",
+      description: newPrivacyModeState 
+        ? "Your sensitive information will be hidden" 
+        : "Sensitive information is now visible"
+    });
   };
 
   const [settings] = useState<SettingItem[]>([
@@ -98,7 +107,7 @@ const Settings = () => {
       id: "privacy",
       icon: <Shield className="text-red-500 dark:text-red-400" />,
       title: "Privacy & Security",
-      description: "Configure your privacy settings",
+      description: "Manage your privacy settings",
     },
     {
       id: "language",
@@ -130,10 +139,14 @@ const Settings = () => {
               key={setting.id}
               className={`animate-fade-in cursor-pointer hover:shadow-md transition-all dark-card
                 ${setting.id === "appearance" ? "bg-primary/5 dark:bg-primary/10" : ""}
+                ${setting.id === "privacy" ? "bg-destructive/5 dark:bg-destructive/10" : ""}
               `}
               onClick={() => {
                 if (setting.id === "appearance") {
                   toggleDarkMode();
+                }
+                if (setting.id === "privacy") {
+                  togglePrivacyMode();
                 }
               }}
             >
@@ -162,6 +175,19 @@ const Settings = () => {
                         id="dark-mode" 
                         checked={isDarkMode}
                         onCheckedChange={toggleDarkMode}
+                      />
+                    </div>
+                  )}
+
+                  {setting.id === "privacy" && (
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="privacy-mode" className="sr-only">
+                        Privacy Mode
+                      </Label>
+                      <Switch 
+                        id="privacy-mode" 
+                        checked={isPrivacyModeEnabled}
+                        onCheckedChange={togglePrivacyMode}
                       />
                     </div>
                   )}
