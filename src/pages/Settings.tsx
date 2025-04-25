@@ -4,18 +4,19 @@ import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/components/BottomNav";
 import { 
   Settings as SettingsIcon, 
-  Bell, 
+  Bell,
   Moon,
   Sun,
   CreditCard,
   Shield,
   Languages,
-  HelpCircle,
   LogOut
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { HelpSupportDialog } from "@/components/settings/HelpSupportDialog";
+import { NotificationSettings } from "@/components/settings/NotificationSettings";
 
 interface SettingItem {
   id: string;
@@ -29,7 +30,8 @@ const Settings = () => {
   const { toast } = useToast();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isPrivacyModeEnabled, setIsPrivacyModeEnabled] = useState(false);
-  
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -148,6 +150,9 @@ const Settings = () => {
                 if (setting.id === "privacy") {
                   togglePrivacyMode();
                 }
+                if (setting.id === "notifications" || setting.id === "help") {
+                  setActiveSection(activeSection === setting.id ? null : setting.id);
+                }
               }}
             >
               <CardContent className="p-4">
@@ -192,6 +197,16 @@ const Settings = () => {
                     </div>
                   )}
                 </div>
+
+                {setting.id === "notifications" && activeSection === "notifications" && (
+                  <div className="mt-4 pt-4 border-t">
+                    <NotificationSettings />
+                  </div>
+                )}
+
+                {setting.id === "help" && (
+                  <HelpSupportDialog />
+                )}
               </CardContent>
             </Card>
           ))}
