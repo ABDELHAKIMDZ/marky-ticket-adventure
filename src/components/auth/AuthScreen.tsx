@@ -1,5 +1,4 @@
-
-import { LogIn, UserPlus, ArrowRight } from "lucide-react";
+import { LogIn, UserPlus, ArrowRight, Bus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
@@ -16,11 +15,10 @@ export const AuthScreen = ({ onSignIn, onSignUp, onSkip }: AuthScreenProps) => {
       <Card className="w-full max-w-md p-6 space-y-6">
         <div className="text-center space-y-4">
           <div className="flex justify-center mb-4">
-            <img 
-              src="/lovable-uploads/36902b06-e701-44e7-800f-58f9fc415372.png"
-              alt="MARKY TICKETS"
-              className="h-48 w-auto" // Increased from h-32 to h-48
-            />
+            <div className="flex flex-col items-center h-48 justify-center">
+              <Bus className="h-24 w-24 text-primary mb-2" />
+              <h1 className="text-4xl font-bold text-primary">MARKY TICKETS</h1>
+            </div>
           </div>
           <p className="text-gray-600">Your Béjaïa travel companion</p>
         </div>
