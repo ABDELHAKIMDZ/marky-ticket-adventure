@@ -14,8 +14,14 @@ export const AuthScreen = ({ onSignIn, onSignUp, onSkip }: AuthScreenProps) => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-6 space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-secondary">Welcome to MARKY TICKETS</h1>
+        <div className="text-center space-y-4">
+          <div className="flex justify-center mb-4">
+            <img 
+              src="/lovable-uploads/36902b06-e701-44e7-800f-58f9fc415372.png"
+              alt="MARKY TICKETS"
+              className="h-16 w-auto"
+            />
+          </div>
           <p className="text-gray-600">Your Béjaïa travel companion</p>
         </div>
         
