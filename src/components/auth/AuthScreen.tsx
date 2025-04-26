@@ -19,7 +19,7 @@ export const AuthScreen = ({ onSignIn, onSignUp, onSkip }: AuthScreenProps) => {
             <img 
               src="/lovable-uploads/36902b06-e701-44e7-800f-58f9fc415372.png"
               alt="MARKY TICKETS"
-              className="h-32 w-auto" // Increased from h-16 to h-32
+              className="h-48 w-auto" // Increased from h-32 to h-48
             />
           </div>
           <p className="text-gray-600">Your Béjaïa travel companion</p>
